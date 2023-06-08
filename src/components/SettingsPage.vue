@@ -94,7 +94,8 @@ const generator: Generator = {
             hiddenNumbers.push(hiddenNumber);
         }
 
-
+        // TODO Логика не учитывает приоритет операторов - доработать
+        // TODO Возможно надо перенести логику в resolver, а здесь вызвать функцию checkTask из него
         //  Вычисление результата уравнения
         let calculatedResult = startValue;
         for (let i = 0; i < complexity; i++) {
@@ -109,7 +110,14 @@ const generator: Generator = {
         equation += ` = ${calculatedResult}`;
         console.log(equation)
 
-
+        // Просто посмотреть, как выглядит полное уравнение TODO DELETE THIS
+        let checkEquation = `${startValue}`;
+        console.log(hiddenNumbers)
+        for (let i = 0; i < complexity; i++) {
+            checkEquation += ` ${operators[i].displaySign} ${hiddenNumbers[i]}`;
+        }
+        checkEquation += ` = ${calculatedResult}`;
+        console.log(checkEquation)
 
         return {
             startValue,
@@ -121,7 +129,8 @@ const generator: Generator = {
     }
 };
 
-
+// TODO finalize
+// TODO Вычислить ответ пользователя и сравнить его с результатом, вычисленным в generator
 const resolver: Resolver = {
     checkTask(task: Task): boolean {
         const {startValue, operators, answer, result} = task;
