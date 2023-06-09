@@ -3,7 +3,7 @@
 // eval('13 * 54 * 72 === 84240')
 
 // 2. Если eval использовать нельзя, то нужно использовать объекты ответов и интерфейсы
-
+export const difficulty = 10; // Уровень сложности
 export enum OperatorSymbol {
     PLUS,
     MINUS,
@@ -51,6 +51,7 @@ export interface Operator {
     label: string;
     displaySign: string;
     checked: boolean,
+
     resolve(left: number, right: number): number;
 
     validate?(left: number, right: number): boolean;

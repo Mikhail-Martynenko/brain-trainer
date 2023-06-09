@@ -1,35 +1,51 @@
 <template>
     <div>
         <div>
-            <h2>Настройки</h2>
+            <div>
+                <h1>Привет!</h1>
+                <!--            <ul>-->
+                <!--                <li v-for="session in statistics.sessions" :key="session.id">-->
+                <!--                    {{ session.startTime }} - {{ session.endTime }}: {{ session.score }}-->
+                <!--                </li>-->
+                <!--            </ul>-->
+            </div>
             <form @submit.prevent="startGame">
-                <label for="equationType">Тип вычислений:</label>
-                <div>
+
+                <h2>Настройки</h2>
+                <label for="roundTime">Время раунда:</label>
+                <input type="range" v-model.number="roundTime" id="roundTime" min="1" max="15" />
+                <span>Длительность {{ roundTime }} минут</span>
+
+                <br>
+                <label for="difficulty">Сложность:</label>
+                <input
+                        type="range" v-model.number="selectedDifficulty" id="difficulty" min="1" :max="difficulty"
+                        required
+                />
+                <span>Сложность {{ selectedDifficulty }}</span>
+                <br>
+                <div class="operators">
                     <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
                         <input type="checkbox" v-model="operator.checked" @change="updateSelectedOperators" />
                         {{ operator.label }}
                     </label>
                 </div>
-
-                <label for="difficulty">Сложность:</label>
-                <select v-model="selectedDifficulty" id="difficulty">
-                    <option v-for="difficulty in difficulties" :value="difficulty" :key="difficulty">
-                        {{ difficulty }}
-                    </option>
-                </select>
-                <br>
-                <label for="roundTime">Время раунда (в секундах):</label>
-                <input type="number" v-model.number="roundTime" id="roundTime" min="1" required>
-                <br>
                 <button type="submit">Начать игру</button>
             </form>
 
-            <h2>Статистика тренировок</h2>
-            <!--            <ul>-->
-            <!--                <li v-for="session in statistics.sessions" :key="session.id">-->
-            <!--                    {{ session.startTime }} - {{ session.endTime }}: {{ session.score }}-->
-            <!--                </li>-->
-            <!--            </ul>-->
+
+        </div>
+        <div class="game">
+            <h1>Игра</h1>
+            <div>{{ currentTask.equation }}</div>
+            <input
+                    class="input-skip"
+                    v-for="(_, index) in currentTask.answer"
+                    :key="index"
+                    type="number"
+                    @input="updateAnswer(index, $event.target.value)" required
+            />
+            <button @click="checkAnswer">Проверить ответ</button>
         </div>
     </div>
 </template>
@@ -47,14 +63,34 @@ import {
     Resolver,
     Statistics,
     Session,
-    Game,
+    Game, difficulty,
 } from '@/domain/domain';
 
-const difficulties = [1, 2, 3, 4];
+const updateAnswer = (index: number, value: number) => {
+    currentTask.value.answer[index] = Number(value);
+};
+
+const checkAnswer = () => {
+    const isCorrect = game.resolver.checkTask(currentTask.value);
+
+    if (isCorrect) {
+        handleCorrectAnswer();
+    } else {
+        handleIncorrectAnswer();
+    }
+};
+
+const handleCorrectAnswer = () => {
+    console.log("Верно!")
+};
+
+const handleIncorrectAnswer = () => {
+    console.log("Неверно!")
+};
 
 let selectedOperators: Operator[] = [];
 const selectedDifficulty = ref(1);
-const roundTime = ref(120);
+const roundTime = ref(7);
 // const answer = ref(0);
 // const showModal = ref(false);
 // const isCorrectAnswer = ref(false);
@@ -65,6 +101,7 @@ const updateSelectedOperators = () => {
 const statistics: Statistics = reactive({
     sessions: [],
 });
+
 
 const session: Session = {
     id: '',
@@ -84,7 +121,7 @@ const generator: Generator = {
         const startValue = getRandomInteger(1, 10); // Случайное начальное значение
         const operators: Operator[] = [];
         const hiddenNumbers: number[] = [];
-        const result = null;
+        //const result = null;
 
         // Генерация случайных операторов из списка выбранных операторов
         for (let i = 0; i < complexity; i++) {
@@ -93,6 +130,7 @@ const generator: Generator = {
             const hiddenNumber = getRandomInteger(1, 10); // Случайное число, которое будет скрыто
             hiddenNumbers.push(hiddenNumber);
         }
+
 
         // TODO Логика не учитывает приоритет операторов - доработать
         // TODO Возможно надо перенести логику в resolver, а здесь вызвать функцию checkTask из него
@@ -136,18 +174,15 @@ const resolver: Resolver = {
         const {startValue, operators, answer, result} = task;
 
         // Проверка наличия одинакового количества операторов и пропусков в ответе
-        if (operators.length !== answer.length) {
-            return false;
-        }
+        if (operators.length !== answer.length) return false;
 
         // // Применяем операторы к начальному значению
-        // let calculatedResult = startValue;
-        // for (let i = 0; i < operators.length; i++) {
-        //     calculatedResult = operators[i].resolve(calculatedResult, answer[i]);
-        // }
-        // Сравниваем полученный результат с ожидаемым результатом
-        // return calculatedResult === result;
-        return false;
+        let calculatedResult = startValue;
+        for (let i = 0; i < operators.length; i++) {
+            calculatedResult = operators[i].resolve(calculatedResult, answer[i]);
+        }
+        //Сравниваем полученный результат с ожидаемым результатом
+        return calculatedResult === result;
     }
 };
 
@@ -195,4 +230,10 @@ const startGame = () => {
 </script>
 
 <style>
+.operators {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    gap: 20px;
+}
 </style>
