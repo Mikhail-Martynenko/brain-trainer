@@ -12,6 +12,9 @@ export default {
 
 <style>
 #app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-family: Arial, sans-serif;
     text-align: center;
     margin-top: 20px;

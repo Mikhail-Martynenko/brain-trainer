@@ -35,18 +35,15 @@
 
 
         </div>
-        <div class="game">
-            <h1>Игра</h1>
-            <div>{{ currentTask.equation }}</div>
-            <input
-                    class="input-skip"
-                    v-for="(_, index) in currentTask.answer"
-                    :key="index"
-                    type="number"
-                    @input="updateAnswer(index, $event.target.value)" required
-            />
-            <button @click="checkAnswer">Проверить ответ</button>
-        </div>
+        <!--            <div>{{ currentTask.equation }}</div>-->
+        <!--            <input-->
+        <!--                class="input-skip"-->
+        <!--                v-for="(_, index) in currentTask.answer"-->
+        <!--                :key="index"-->
+        <!--                type="number"-->
+        <!--                @input="updateAnswer(index, $event.target.value)" required-->
+        <!--            />-->
+        <!--            <button @click="checkAnswer">Проверить ответ</button>-->
     </div>
 </template>
 
@@ -65,6 +62,12 @@ import {
     Session,
     Game, difficulty,
 } from '@/domain/domain';
+import router from "@/router";
+import {useStore} from "vuex";
+import {getRandomInteger} from "@/utils";
+
+
+const store = useStore();
 
 const updateAnswer = (index: number, value: number) => {
     currentTask.value.answer[index] = Number(value);
@@ -102,18 +105,13 @@ const statistics: Statistics = reactive({
     sessions: [],
 });
 
-
 const session: Session = {
     id: '',
     startTime: new Date(),
     endTime: null,
     score: 0,
 };
-const getRandomInteger = (min: number, max: number): number => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+
 const generator: Generator = {
     generateTask(params: GenerateTaskParams): Task {
         const {complexity, allowedOperators} = params;
@@ -204,7 +202,6 @@ const currentTask = ref<Task>({
 });
 
 const startGame = () => {
-    // todo -  go to game page
     const selectedOperatorSymbols = selectedOperators.map(operator => operator.label);
 
     const params: GenerateTaskParams = {
@@ -212,6 +209,9 @@ const startGame = () => {
         allowedOperators: ALLOWED_OPERATORS.filter(operator => selectedOperatorSymbols.includes(operator.label)),
     };
     currentTask.value = game.generator.generateTask(params);
+    store.dispatch('setCurrentTask', currentTask.value);
+
+    router.push({name: 'game'});
 };
 
 // const checkAnswer = () => {

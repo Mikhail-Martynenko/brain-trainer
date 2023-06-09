@@ -1,14 +1,17 @@
-import { createStore } from 'vuex'
+import {createStore} from 'vuex';
+import {Task} from "@/domain/domain";
 
-export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
-})
+interface AppState {
+    currentTask: Task | null;
+}
+
+export default createStore<AppState>({
+    state: {
+        currentTask: null,
+    },
+    actions: {
+        setCurrentTask(_, task: Task) {
+            this.state.currentTask = task;
+        },
+    },
+});
