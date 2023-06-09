@@ -10,8 +10,8 @@ export default createStore<AppState>({
         currentTask: null,
     },
     actions: {
-        setCurrentTask(_, task: Task) {
-            this.state.currentTask = task;
+        setCurrentTask({state}, task: Task) {
+            state.currentTask = task;
         },
     },
 });

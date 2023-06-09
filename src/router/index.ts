@@ -1,18 +1,17 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import Settings from "@/components/SettingsPage.vue";
 import GamePage from "@/components/GamePage.vue";
+import SettingsPage from "@/components/SettingsPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'settings',
-    component: Settings
+    name: 'settingsPage',
+    component: SettingsPage
   },
   {
     path: '/game',
-    name: 'game',
+    name: 'gamePage',
     component: GamePage,
-    props: true,
   },
 ]
 
