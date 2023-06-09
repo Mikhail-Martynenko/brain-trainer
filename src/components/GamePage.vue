@@ -1,7 +1,9 @@
 <template>
-
     <div class="game-container">
-        <div>{{ currentTask?.equation }}</div>
+        <div class="cancel">
+            <button>Oтмена</button>
+        </div>
+        <div id="equationContainer">{{ currentTask?.equation }}</div>
         <input
                 class="input-skip"
                 v-model="currentAnswer"
@@ -13,9 +15,9 @@
                 <button v-for="digit in digits" :key="digit" @click="addDigit(digit)">{{ digit }}</button>
             </div>
             <div class="helpers-buttons">
-                <button @click="checkAnswer"> &lt;</button>
-                <button @click="checkAnswer"> &gt;</button>
-                <button @click="checkAnswer"> ?</button>
+                <button @click="checkAnswer">&lt;</button>
+                <button @click="checkAnswer">&gt;</button>
+                <button @click="checkAnswer">?</button>
                 <button @click="checkAnswer">=</button>
             </div>
         </div>
@@ -23,9 +25,39 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {useStore} from 'vuex';
 import {Task} from "@/domain/domain";
+
+// onMounted(() => {
+//     // Получаем контейнер уравнения
+//     const equationContainer = document.getElementById('equation-container');
+//     // Уравнение с пропусками
+//     const equation = currentTask?.equation;
+//
+//     // Разбиваем уравнение на части (пропуски и остальную часть)
+//     const parts = equation?.split('_');
+//
+//     if (!parts) return;
+//     // Проходимся по каждому пропуску и создаем input и текстовый узел
+//     parts.forEach((part, index) => {
+//         if (part === '') {
+//             // Создаем input для пропуска
+//             const input = document.createElement('input');
+//             input.type = 'text';
+//
+//             // Добавляем input в контейнер
+//             if (!equationContainer) return;
+//             equationContainer.appendChild(input);
+//             // Создаем текстовый узел для остальной части уравнения
+//             const remainingText = document.createTextNode(part);
+//
+//             // Добавляем остальную часть уравнения после input в контейнер
+//             equationContainer.appendChild(remainingText);
+//         }
+//     });
+// });
+
 
 const store = useStore();
 
@@ -49,6 +81,8 @@ const checkAnswer = () => {
     width: 800px;
     height: 600px;
     border: 1px solid salmon;
+    background-color: #fdfdfd;
+    position: relative;
 }
 
 .buttons {
@@ -59,11 +93,6 @@ const checkAnswer = () => {
 }
 
 .keyboard {
-    /*display: grid;*/
-    /*grid-template-columns: repeat(3, 1fr);*/
-    /*grid-gap: 10px;*/
-    /*width: 40px;*/
-    /*height: 40px;*/
     display: flex;
     flex-wrap: wrap;
     align-content: center;
@@ -114,4 +143,24 @@ const checkAnswer = () => {
     transform: translateY(2px);
     box-shadow: 0 4px 2px rgba(0, 0, 0, 0.3);
 }
+
+.cancel {
+    position: absolute;
+}
+
+.cancel button {
+    background-color: white;
+    text-transform: uppercase;
+    color: #6f6f6f;
+    width: 100px;
+    height: 35px;
+    border: none;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.cancel button:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 </style>

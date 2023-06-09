@@ -1,49 +1,36 @@
 <template>
-    <div>
+    <div class="setting-container">
         <div>
-            <div>
-                <h1>Привет!</h1>
-                <!--            <ul>-->
-                <!--                <li v-for="session in statistics.sessions" :key="session.id">-->
-                <!--                    {{ session.startTime }} - {{ session.endTime }}: {{ session.score }}-->
-                <!--                </li>-->
-                <!--            </ul>-->
+            <h1>Привет!</h1>
+            <div class="statistic_text">
+                <p>Добро пожаловать на ??? тренировочный день,</p>
+                <p>Ваш последний результат - решено ??? из ???</p>
+                <p>Общая точность ???%</p>
             </div>
-            <form @submit.prevent="startGame">
-
-                <h2>Настройки</h2>
-                <label for="roundTime">Время раунда:</label>
-                <input type="range" v-model.number="roundTime" id="roundTime" min="1" max="15" />
-                <span>Длительность {{ roundTime }} минут</span>
-
-                <br>
-                <label for="difficulty">Сложность:</label>
-                <input
-                        type="range" v-model.number="selectedDifficulty" id="difficulty" min="1" :max="difficulty"
-                        required
-                />
-                <span>Сложность {{ selectedDifficulty }}</span>
-                <br>
-                <div class="operators">
-                    <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
-                        <input type="checkbox" v-model="operator.checked" @change="updateSelectedOperators" />
-                        {{ operator.label }}
-                    </label>
-                </div>
-                <button type="submit">Начать игру</button>
-            </form>
-
-
+            <!--            <ul>-->
+            <!--                <li v-for="session in statistics.sessions" :key="session.id">-->
+            <!--                    {{ session.startTime }} - {{ session.endTime }}: {{ session.score }}-->
+            <!--                </li>-->
+            <!--            </ul>-->
         </div>
-        <!--            <div>{{ currentTask.equation }}</div>-->
-        <!--            <input-->
-        <!--                class="input-skip"-->
-        <!--                v-for="(_, index) in currentTask.answer"-->
-        <!--                :key="index"-->
-        <!--                type="number"-->
-        <!--                @input="updateAnswer(index, $event.target.value)" required-->
-        <!--            />-->
-        <!--            <button @click="checkAnswer">Проверить ответ</button>-->
+        <form @submit.prevent="startGame">
+
+            <h2>Настройки</h2>
+            <input type="range" v-model.number="roundTime" min="1" max="15" />
+            <span>Длительность {{ roundTime }} минут</span>
+
+            <br>
+            <input type="range" v-model.number="selectedDifficulty" min="1" :max="difficulty" required />
+            <span>Сложность {{ selectedDifficulty }}</span>
+            <br>
+            <div class="operators">
+                <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
+                    <input type="checkbox" v-model="operator.checked" @change="updateSelectedOperators" />
+                    {{ operator.label }}
+                </label>
+            </div>
+            <button class="start_game_button" type="submit">Play!</button>
+        </form>
     </div>
 </template>
 
@@ -230,10 +217,49 @@ const startGame = () => {
 </script>
 
 <style>
+h1 {
+    text-align: left;
+}
+
+.statistic_text {
+    text-align: left;
+}
+
+.setting-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #6f6f6f;
+    padding: 40px;
+    width: 400px;
+    position: relative;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .operators {
     display: flex;
     flex-direction: column;
-    margin: 20px;
+    align-items: flex-start;
     gap: 20px;
+}
+
+.start_game_button {
+    position: absolute;
+    bottom: 20px;
+    right: 40px;
+    background-color: white;
+    border: none;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+    width: 75px;
+    height: 35px;
+}
+
+.start_game_button:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 </style>
