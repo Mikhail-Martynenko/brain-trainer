@@ -3,14 +3,17 @@
         <div class="cancel">
             <button @click="cancelButton">Oтмена</button>
         </div>
-        <div id="equationContainer">{{ currentTask?.equation }}?</div>
-        <input
-                class="input-skip"
-                v-for="(_, index) in currentTask?.answer"
-                :key="index"
-                type="number"
-                @input="updateAnswer(index, $event.target.value)" required
-        />
+      <div class="equation-container">
+        <template v-for="(char, index) in currentTask?.equation" :key="index">
+          <input
+              v-if="char === '_'"
+              class="equation-char"
+              v-model.number="currentAnswerArray[index]"
+              required
+          />
+          <span v-else>{{ char }}</span>
+        </template>
+      </div>
         <div class="buttons">
             <div class="keyboard">
                 <button v-for="digit in digits" :key="digit" @click="addDigit(digit)">{{ digit }}</button>
@@ -26,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {ref} from 'vue';
 import {useStore} from 'vuex';
 import {Task} from "@/domain/domain";
 import game from "@/domain/game";
@@ -35,27 +38,26 @@ import router from "@/router";
 const store = useStore();
 
 const currentTask: Task | null = store.state.currentTask;
-const currentAnswer = ref('');
+const currentAnswer = ref(''); //
+const helper = currentTask?.answer
+const currentAnswerArray = ref<number[]>([]);
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-console.log(currentTask)
-
-const updateAnswer = (index: number, value: number) => {
-    if (!currentTask) return;
-    currentTask.answer[index] = Number(value);
-};
 
 const addDigit = (digit: any) => {
     currentAnswer.value += digit;
 };
+
 const showAnswer = () => {
     // TODO для показа решения (без проверки). Подумать как выводить лучше эти числа
     // TODO 1. На места пропусков
     // TODO 2. Либо же как-то по-другому
 }
+
 const focusFieldLeft = () => {
     // TODO  < - для перевода фокуса между полями инпута
     // TODO 1. Подумать, как реализовать
 }
+
 const focusFieldRight = () => {
     // TODO > - для перевода фокуса между полями инпута
     // TODO 1. Подумать, как реализовать
@@ -63,8 +65,8 @@ const focusFieldRight = () => {
 // TODO должно отображаться модальное окно с результатами (верный/неверный ответ). После закрытия модального окна пользователь автоматически переходит к следующему примеру.
 const checkAnswer = () => {
     if (!currentTask) return;
+    currentTask.answer = Object.values(currentAnswerArray.value)
     const isCorrect = game.resolver.checkTask(currentTask);
-
     if (isCorrect) {
         handleCorrectAnswer();
     } else {
