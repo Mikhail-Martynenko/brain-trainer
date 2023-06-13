@@ -8,7 +8,8 @@
                 <input
                         v-if="char === '_'"
                         class="equation-char"
-                        v-model.number="currentAnswerArray[index]"
+                        :value="inputValues[index]"
+                        @input="updateInputValue(index, $event.target.value)"
                         required
                 />
                 <span v-else>{{ char }}</span>
@@ -32,17 +33,16 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import {useStore} from 'vuex';
-import {Task} from "@/domain/domain";
+import {GenerateTaskParams, Task} from "@/domain/domain";
 import game from "@/domain/game";
 import router from "@/router";
 import ModalResult from "@/components/ModalResult.vue";
+import generator from "@/domain/generator";
 
 const store = useStore();
 
-const currentTask: Task | null = store.state.currentTask;
+let currentTask: Task | null = store.state.currentTask;
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
-const currentAnswer = ref(''); //
-const currentAnswerArray = ref<number[]>([]);
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
 const helper = Object.values(currentTask?.answer as any)
@@ -51,8 +51,20 @@ const showModal = ref(false);
 const modalTitle = ref('');
 
 console.log(helper, 'helper')
+const inputValues = ref<{ [index: number]: number }>({});
+
+const updateInputValue = (index: number, value: number) => {
+    inputValues.value[index] = value;
+};
+
 const addDigit = (digit: any) => {
-    // currentAnswerArray.value.push(digit);
+    const currentIndex = activeIndex.value;
+    const inputElements = document.querySelectorAll('.equation-char');
+    if (inputElements.length === 0 || currentIndex < 0 || currentIndex >= inputElements.length) return;
+
+    const activeInput = inputElements[currentIndex] as HTMLInputElement;
+    activeInput.value += digit;
+    updateInputValue(currentIndex, Number(activeInput.value));
 };
 
 const showAnswer = () => {
@@ -76,7 +88,6 @@ const focusFieldLeft = () => {
     activeIndex.value = newIndex;
     (inputElements[newIndex] as HTMLInputElement).focus();
 };
-
 const focusFieldRight = () => {
     const currentIndex = activeIndex.value;
     const inputElements = document.querySelectorAll('.equation-char');
@@ -90,7 +101,7 @@ const focusFieldRight = () => {
 // TODO должно отображаться модальное окно с результатами (верный/неверный ответ). После закрытия модального окна пользователь автоматически переходит к следующему примеру.
 const checkAnswer = () => {
     if (!currentTask) return;
-    currentTask.answer = Object.values(currentAnswerArray.value)
+    currentTask.answer = Object.values(inputValues.value)
     const isCorrect = game.resolver.checkTask(currentTask);
     if (isCorrect) {
         modalTitle.value = 'Верно!';
@@ -103,7 +114,19 @@ const checkAnswer = () => {
 
 const closeModal = () => {
     showModal.value = false;
+    generateNewTask()
 };
+const generateNewTask = () => {
+    if (!currentTask) return;
+    const params: GenerateTaskParams = {
+        complexity: currentTask?.complexity,
+        allowedOperators: currentTask?.operators,
+    };
+    const newTask = generator.generateTask(params);
+    store.dispatch('setCurrentTask', newTask);
+    currentTask = store.state.currentTask;
+    console.log(currentTask)
+}
 
 const cancelButton = () => {
     // TODO Игра прекращается пользователь переходит на главную страницу.
@@ -116,12 +139,19 @@ const cancelButton = () => {
 
 <style scoped>
 .game-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     padding: 40px;
     width: 800px;
     height: 600px;
     border: 1px solid salmon;
     background-color: #fdfdfd;
     position: relative;
+}
+
+.equation-container {
+    font-size: 32px;
 }
 
 .buttons {
@@ -185,6 +215,8 @@ const cancelButton = () => {
 
 .cancel {
     position: absolute;
+    top: 20px;
+    left: 15px;
 }
 
 .cancel button {
@@ -200,6 +232,20 @@ const cancelButton = () => {
 .cancel button:active {
     transform: translateY(2px);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+input {
+    width: 64px;
+    text-align: center;
+    font-size: 32px;
+    border: none;
+    border-bottom: 1px solid #bcbcbc;
+}
+
+input:focus {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid black;
 }
 
 </style>

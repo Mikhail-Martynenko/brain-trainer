@@ -48,6 +48,7 @@ const generator: Generator = {
             answer: hiddenNumbers, // Значения, которые пользователь должен ввести
             result: calculatedResult,
             equation,
+            complexity,
         };
     }
 };

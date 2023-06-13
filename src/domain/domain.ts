@@ -67,6 +67,7 @@ export interface Task {
     answer: number[];
     result: number;
     equation: string; // Уравнение
+    complexity:number
 }
 
 export interface GenerateTaskParams {

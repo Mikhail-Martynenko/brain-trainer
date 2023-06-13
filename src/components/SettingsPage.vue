@@ -53,7 +53,8 @@ const currentTask = ref<Task>({
     operators: [],
     answer: [],
     result: 0,
-    equation: ''
+    equation: '',
+    complexity: 1,
 });
 
 const startGame = () => {
