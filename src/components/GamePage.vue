@@ -25,6 +25,7 @@
                 <button @click="checkAnswer">=</button>
             </div>
         </div>
+        <ModalResult v-if="showModal" :title="modalTitle" :show="showModal" @close="closeModal" />
     </div>
 </template>
 
@@ -34,6 +35,7 @@ import {useStore} from 'vuex';
 import {Task} from "@/domain/domain";
 import game from "@/domain/game";
 import router from "@/router";
+import ModalResult from "@/components/ModalResult.vue";
 
 const store = useStore();
 
@@ -44,6 +46,9 @@ const currentAnswerArray = ref<number[]>([]);
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
 const helper = Object.values(currentTask?.answer as any)
+
+const showModal = ref(false);
+const modalTitle = ref('');
 
 console.log(helper, 'helper')
 const addDigit = (digit: any) => {
@@ -88,19 +93,18 @@ const checkAnswer = () => {
     currentTask.answer = Object.values(currentAnswerArray.value)
     const isCorrect = game.resolver.checkTask(currentTask);
     if (isCorrect) {
-        handleCorrectAnswer();
+        modalTitle.value = 'Верно!';
+        showModal.value = true;
     } else {
-        handleIncorrectAnswer();
+        modalTitle.value = 'Неверно!';
+        showModal.value = true;
     }
 };
 
-const handleCorrectAnswer = () => {
-    console.log("Верно!")
+const closeModal = () => {
+    showModal.value = false;
 };
 
-const handleIncorrectAnswer = () => {
-    console.log("Неверно!")
-};
 const cancelButton = () => {
     // TODO Игра прекращается пользователь переходит на главную страницу.
     // TODO В общую статистику добавляются результаты по всем примерам из незаконченного раунда,
