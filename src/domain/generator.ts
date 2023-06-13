@@ -17,6 +17,8 @@ const generator: Generator = {
         }
         // TODO Логика не учитывает приоритет операторов - доработать
         // TODO Возможно надо перенести логику в resolver, а здесь вызвать функцию checkTask из него
+
+          operators.sort((a, b) => b.priority - a.priority);// .......
         // Вычисление результата уравнения
         let calculatedResult = startValue;
         for (let i = 0; i < complexity; i++) {

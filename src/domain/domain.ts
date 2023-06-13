@@ -20,6 +20,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Суммирование",
         displaySign: '+',
         checked: false,
+        priority: 12,
         resolve: (a, b) => a + b,
     },
     {
@@ -27,6 +28,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Разность",
         displaySign: '-',
         checked: false,
+        priority: 12,
         resolve: (a, b) => a - b,
     },
     {
@@ -34,6 +36,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Умножение",
         displaySign: '*',
         checked: false,
+        priority: 13,
         resolve: (a, b) => a * b,
     },
     {
@@ -41,6 +44,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Деление",
         displaySign: '/',
         checked: false,
+        priority: 13,
         resolve: (a, b) => a / b,
         validate: (a, b) => b !== 0,
     },
@@ -51,7 +55,7 @@ export interface Operator {
     label: string;
     displaySign: string;
     checked: boolean,
-
+    priority: number,
     resolve(left: number, right: number): number;
 
     validate?(left: number, right: number): boolean;

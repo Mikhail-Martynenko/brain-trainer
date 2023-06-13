@@ -3,17 +3,17 @@
         <div class="cancel">
             <button @click="cancelButton">Oтмена</button>
         </div>
-      <div class="equation-container">
-        <template v-for="(char, index) in currentTask?.equation" :key="index">
-          <input
-              v-if="char === '_'"
-              class="equation-char"
-              v-model.number="currentAnswerArray[index]"
-              required
-          />
-          <span v-else>{{ char }}</span>
-        </template>
-      </div>
+        <div class="equation-container">
+            <template v-for="(char, index) in currentTask?.equation" :key="index">
+                <input
+                        v-if="char === '_'"
+                        class="equation-char"
+                        v-model.number="currentAnswerArray[index]"
+                        required
+                />
+                <span v-else>{{ char }}</span>
+            </template>
+        </div>
         <div class="buttons">
             <div class="keyboard">
                 <button v-for="digit in digits" :key="digit" @click="addDigit(digit)">{{ digit }}</button>
@@ -38,30 +38,50 @@ import router from "@/router";
 const store = useStore();
 
 const currentTask: Task | null = store.state.currentTask;
+const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
 const currentAnswer = ref(''); //
-const helper = currentTask?.answer
 const currentAnswerArray = ref<number[]>([]);
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
+const helper = Object.values(currentTask?.answer as any)
+
+console.log(helper, 'helper')
 const addDigit = (digit: any) => {
-    currentAnswer.value += digit;
+    // currentAnswerArray.value.push(digit);
 };
 
 const showAnswer = () => {
     // TODO для показа решения (без проверки). Подумать как выводить лучше эти числа
     // TODO 1. На места пропусков
     // TODO 2. Либо же как-то по-другому
+    // if (!currentTask) return;
+    // console.log(currentAnswerArray.value, 'before')
+    // // Заменить значения массива currentAnswerArray на значения из helper
+    // currentAnswerArray.value = [...helper as number[]];
+    // console.log(currentAnswerArray.value, 'after')
 }
 
 const focusFieldLeft = () => {
-    // TODO  < - для перевода фокуса между полями инпута
-    // TODO 1. Подумать, как реализовать
-}
+    const currentIndex = activeIndex.value;
+    const inputElements = document.querySelectorAll('.equation-char');
+    if (inputElements.length === 0) return;
+    const lastIndex = inputElements.length - 1;
+
+    const newIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+    activeIndex.value = newIndex;
+    (inputElements[newIndex] as HTMLInputElement).focus();
+};
 
 const focusFieldRight = () => {
-    // TODO > - для перевода фокуса между полями инпута
-    // TODO 1. Подумать, как реализовать
-}
+    const currentIndex = activeIndex.value;
+    const inputElements = document.querySelectorAll('.equation-char');
+    if (inputElements.length === 0) return;
+    const lastIndex = inputElements.length - 1;
+
+    const newIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+    activeIndex.value = newIndex;
+    (inputElements[newIndex] as HTMLInputElement).focus();
+};
 // TODO должно отображаться модальное окно с результатами (верный/неверный ответ). После закрытия модального окна пользователь автоматически переходит к следующему примеру.
 const checkAnswer = () => {
     if (!currentTask) return;
