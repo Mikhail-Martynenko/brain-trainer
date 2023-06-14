@@ -10,7 +10,7 @@
                         v-if="char === '_'"
                         class="equation-char"
                         :value="inputValues[index]"
-                        @input="updateInputValue(index, Number($event.target.value))"
+                        @input="updateInputValue(index, Number($event.target.value) )"
                 />
                 <span v-else>{{ char }}</span>
             </template>
@@ -43,20 +43,13 @@ import TimerSession from "@/components/TimerSession.vue";
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
 
-
-let currentTask: Task | null = taskStore.state.currentTask;
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
-const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-
-const helper = currentTask?.answer ? Object.values(currentTask.answer) : [];
-
-
 const showModal = ref(false);
 const modalTitle = ref('');
-
-console.log(helper, 'helper')
-
 const inputValues = ref<{ [index: number]: number }>({});
+
+let currentTask: Task | null = taskStore.state.currentTask;
+const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
 const updateInputValue = (index: number, value: number) => {
     inputValues.value[index] = value;
@@ -72,16 +65,15 @@ const addDigit = (digit: number) => {
 };
 
 const showAnswer = () => {
-    if (!currentTask || !helper) return;
+    if (!currentTask) return;
 
     const inputElements = document.querySelectorAll('.equation-char');
     if (inputElements.length === 0) return;
 
     for (let i = 0; i < inputElements.length; i++) {
         const inputElement = inputElements[i] as HTMLInputElement;
-        if (!helper[i]) return;
-        inputElement.value = String(helper[i]);
-        updateInputValue(i, Number(helper[i]));
+        inputElement.value = String(currentTask.answer[i]);
+        updateInputValue(i, Number(currentTask.answer[i]));
 
     }
 };
@@ -99,6 +91,7 @@ const focusFieldRight = () => {
     const currentIndex = activeIndex.value;
     const inputElements = document.querySelectorAll('.equation-char');
     if (inputElements.length === 0) return;
+
     const lastIndex = inputElements.length - 1;
 
     const newIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
@@ -107,14 +100,15 @@ const focusFieldRight = () => {
 };
 const checkAnswer = () => {
     if (!currentTask) return;
-    currentTask.answer = Object.values(inputValues.value)
+    console.log(inputValues.value, 'inputValues.value');
+    currentTask.answer = Object.values(inputValues.value) // .slice(0,currentTask.answer.length)
     console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
+
     if (isCorrect) {
         modalTitle.value = 'Верно!';
         showModal.value = true;
         sessionStore.dispatch('incrementScore')
-
     } else {
         modalTitle.value = 'Неверно!';
         showModal.value = true;
@@ -129,6 +123,7 @@ const closeModal = () => {
 
 const generateNewTask = () => {
     if (!currentTask) return;
+
     const params: GenerateTaskParams = {
         complexity: currentTask?.complexity,
         allowedOperators: currentTask?.operators,
@@ -136,8 +131,6 @@ const generateNewTask = () => {
     const newTask = generator.generateTask(params);
     taskStore.dispatch('setCurrentTask', newTask);
     currentTask = taskStore.state.currentTask;
-    if (!currentTask) return;
-    helper.splice(0, helper.length, ...Object.values(currentTask.answer));
     console.log(currentTask)
 }
 
