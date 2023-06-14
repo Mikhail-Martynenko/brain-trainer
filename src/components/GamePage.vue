@@ -11,7 +11,6 @@
                         class="equation-char"
                         :value="inputValues[index]"
                         @input="updateInputValue(index, Number($event.target.value))"
-                        required
                 />
                 <span v-else>{{ char }}</span>
             </template>
@@ -49,7 +48,8 @@ let currentTask: Task | null = taskStore.state.currentTask;
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
-const helper = Object.values(currentTask?.answer as number[])
+const helper = currentTask?.answer ? Object.values(currentTask.answer) : [];
+
 
 const showModal = ref(false);
 const modalTitle = ref('');
@@ -61,7 +61,6 @@ const inputValues = ref<{ [index: number]: number }>({});
 const updateInputValue = (index: number, value: number) => {
     inputValues.value[index] = value;
 };
-
 const addDigit = (digit: number) => {
     const currentIndex = activeIndex.value;
     const inputElements = document.querySelectorAll('.equation-char');
@@ -73,15 +72,19 @@ const addDigit = (digit: number) => {
 };
 
 const showAnswer = () => {
-    // TODO для показа решения (без проверки). Подумать как выводить лучше эти числа
-    // TODO 1. На места пропусков
-    // TODO 2. Либо же как-то по-другому
-    // if (!currentTask) return;
-    // console.log(currentAnswerArray.value, 'before')
-    // // Заменить значения массива currentAnswerArray на значения из helper
-    // currentAnswerArray.value = [...helper as number[]];
-    // console.log(currentAnswerArray.value, 'after')
-}
+    // if (!currentTask || !helper) return;
+    //
+    // const inputElements = document.querySelectorAll('.equation-char');
+    // if (inputElements.length === 0) return;
+    //
+    // for (let i = 0; i < inputElements.length; i++) {
+    //     const inputElement = inputElements[i] as HTMLInputElement;
+    //     if (helper[i]) {
+    //         inputElement.value = String(helper[i]);
+    //         updateInputValue(i, Number(helper[i]));
+    //     }
+    // }
+};
 const focusFieldLeft = () => {
     const currentIndex = activeIndex.value;
     const inputElements = document.querySelectorAll('.equation-char');
@@ -123,6 +126,7 @@ const closeModal = () => {
     showModal.value = false;
     generateNewTask()
 };
+
 const generateNewTask = () => {
     if (!currentTask) return;
     const params: GenerateTaskParams = {
@@ -136,12 +140,9 @@ const generateNewTask = () => {
 }
 
 const cancelButton = () => {
-    // TODO Игра прекращается пользователь переходит на главную страницу.
-    // TODO В общую статистику добавляются результаты по всем примерам из незаконченного раунда,
-    // TODO которые пользователь успел отправить на проверку.
-
     router.push({name: 'settingsPage'});
 }
+
 </script>
 
 <style scoped>

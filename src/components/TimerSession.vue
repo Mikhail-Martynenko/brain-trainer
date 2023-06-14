@@ -7,6 +7,8 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue';
 import game from "@/domain/game";
+import router from "@/router";
+
 const timeLeft = ref(game.session.timer * 60);
 const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -26,8 +28,10 @@ onMounted(() => {
     watch(timeLeft, (newValue) => {
         if (newValue <= 0) {
             clearInterval(timer);
-            // Additional actions when the time runs out
+
+            router.push({name: 'settingsPage'});
         }
+
     });
 });
 </script>
