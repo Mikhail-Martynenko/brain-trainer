@@ -3,14 +3,11 @@
 // eval('13 * 54 * 72 === 84240')
 
 // 2. Если eval использовать нельзя, то нужно использовать объекты ответов и интерфейсы
-export const difficulty = 10; // Уровень сложности
 export enum OperatorSymbol {
     PLUS,
     MINUS,
     MULTIPLY,
     DIVIDE,
-
-
     // POW
 }
 
@@ -96,6 +93,7 @@ export interface Session {
     startTime: Date;
     endTime: Date | null;
     score: number;
+    missed: number;
 }
 
 export interface Game {

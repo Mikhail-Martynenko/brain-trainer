@@ -1,22 +1,24 @@
-import { reactive } from 'vue';
-import { Statistics, Session, Game } from '@/domain/domain';
+import {Statistics, Session, Game} from '@/domain/domain';
 import generator from '@/domain/generator';
 import resolver from '@/domain/resolver';
 
-const statistics: Statistics = reactive({
+export const maxDifficultyLevel = 10; // Максимальный уровень сложности
+
+const statistics: Statistics = {
     sessions: [],
-});
+};
 
 const session: Session = {
-    id: '',
+    id: Date.now().toString(),
     startTime: new Date(),
     endTime: null,
     score: 0,
+    missed: 0
 };
 
 const game: Game = {
     statistics,
-    config: { level: 1 },
+    config: {level: 1},
     session,
     generator,
     resolver,

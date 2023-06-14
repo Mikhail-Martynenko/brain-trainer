@@ -4,18 +4,17 @@
             <h1>Привет!</h1>
             <div class="statistic_text">
                 <p>Добро пожаловать на ??? тренировочный день,</p>
-                <p>Ваш последний результат - решено ??? из ???</p>
-                <p>Общая точность ???%</p>
+                <p>Ваш последний результат - решено {{ lastSession.score }} из {{lastSession.score + lastSession.missed}}</p>
+                <p>Общая точность {{ sessionStore.getters.getAccuracy }}%</p>
             </div>
         </div>
         <form @submit.prevent="startGame">
-
             <h2>Настройки</h2>
             <input type="range" v-model.number="roundTime" min="1" max="15" />
             <span>Длительность {{ roundTime }} минут</span>
 
             <br>
-            <input type="range" v-model.number="selectedDifficulty" min="1" :max="difficulty" required />
+            <input type="range" v-model.number="selectedDifficulty" min="1" :max="maxDifficultyLevel" required />
             <span>Сложность {{ selectedDifficulty }}</span>
             <br>
             <div class="operators">
@@ -32,20 +31,24 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 
-import {ALLOWED_OPERATORS, Operator, Task, GenerateTaskParams, difficulty} from '@/domain/domain';
+import {ALLOWED_OPERATORS, Operator, Task, GenerateTaskParams} from '@/domain/domain';
 import router from "@/router";
 import {useStore} from "vuex";
-import game from "@/domain/game";
+import game, {maxDifficultyLevel} from "@/domain/game";
 
-const store = useStore();
+const taskStore = useStore('taskStore');
+const sessionStore = useStore('sessionStore');
 
 let selectedOperators: Operator[] = [];
-const selectedDifficulty = ref(1);
+const selectedDifficulty = ref<number>(1);
 const roundTime = ref(7);
 
 const updateSelectedOperators = () => {
     selectedOperators = ALLOWED_OPERATORS.filter(operator => operator.checked).map(operator => operator);
 };
+
+const [lastSession] = sessionStore.state.sessions.slice(-1);
+console.log(lastSession)
 
 // Вычисляемые свойства
 const currentTask = ref<Task>({
@@ -56,17 +59,18 @@ const currentTask = ref<Task>({
     equation: '',
     complexity: 1,
 });
-
 const startGame = () => {
     const selectedOperatorSymbols = selectedOperators.map(operator => operator.label);
-    console.log(game, 'game')
+
     const params: GenerateTaskParams = {
         complexity: selectedDifficulty.value,
         allowedOperators: ALLOWED_OPERATORS.filter(operator => selectedOperatorSymbols.includes(operator.label)),
     };
-    currentTask.value = game.generator.generateTask(params);
-    store.dispatch('setCurrentTask', currentTask.value);
 
+    currentTask.value = game.generator.generateTask(params);
+    taskStore.dispatch('setCurrentTask', currentTask.value);
+
+    sessionStore.dispatch('startSession', game.session);
     router.push({name: 'gamePage'});
 };
 

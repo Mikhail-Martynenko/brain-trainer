@@ -9,7 +9,7 @@
                         v-if="char === '_'"
                         class="equation-char"
                         :value="inputValues[index]"
-                        @input="updateInputValue(index, $event.target.value)"
+                        @input="updateInputValue(index, Number($event.target.value))"
                         required
                 />
                 <span v-else>{{ char }}</span>
@@ -39,13 +39,14 @@ import router from "@/router";
 import ModalResult from "@/components/ModalResult.vue";
 import generator from "@/domain/generator";
 
-const store = useStore();
+const taskStore = useStore('taskStore');
+const sessionStore = useStore('sessionStore');
 
-let currentTask: Task | null = store.state.currentTask;
+let currentTask: Task | null = taskStore.state.currentTask;
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
-const helper = Object.values(currentTask?.answer as any)
+const helper = Object.values(currentTask?.answer as number[])
 
 const showModal = ref(false);
 const modalTitle = ref('');
@@ -57,7 +58,7 @@ const updateInputValue = (index: number, value: number) => {
     inputValues.value[index] = value;
 };
 
-const addDigit = (digit: any) => {
+const addDigit = (digit: number) => {
     const currentIndex = activeIndex.value;
     const inputElements = document.querySelectorAll('.equation-char');
     if (inputElements.length === 0 || currentIndex < 0 || currentIndex >= inputElements.length) return;
@@ -77,7 +78,6 @@ const showAnswer = () => {
     // currentAnswerArray.value = [...helper as number[]];
     // console.log(currentAnswerArray.value, 'after')
 }
-
 const focusFieldLeft = () => {
     const currentIndex = activeIndex.value;
     const inputElements = document.querySelectorAll('.equation-char');
@@ -98,17 +98,20 @@ const focusFieldRight = () => {
     activeIndex.value = newIndex;
     (inputElements[newIndex] as HTMLInputElement).focus();
 };
-// TODO должно отображаться модальное окно с результатами (верный/неверный ответ). После закрытия модального окна пользователь автоматически переходит к следующему примеру.
 const checkAnswer = () => {
     if (!currentTask) return;
     currentTask.answer = Object.values(inputValues.value)
+    console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
     if (isCorrect) {
         modalTitle.value = 'Верно!';
         showModal.value = true;
+        sessionStore.dispatch('incrementScore')
+
     } else {
         modalTitle.value = 'Неверно!';
         showModal.value = true;
+        sessionStore.dispatch('incrementMissed')
     }
 };
 
@@ -123,8 +126,8 @@ const generateNewTask = () => {
         allowedOperators: currentTask?.operators,
     };
     const newTask = generator.generateTask(params);
-    store.dispatch('setCurrentTask', newTask);
-    currentTask = store.state.currentTask;
+    taskStore.dispatch('setCurrentTask', newTask);
+    currentTask = taskStore.state.currentTask;
     console.log(currentTask)
 }
 

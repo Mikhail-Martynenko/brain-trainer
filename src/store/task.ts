@@ -5,7 +5,7 @@ interface AppState {
     currentTask: Task | null;
 }
 
-export default createStore<AppState>({
+const taskStore = createStore<AppState>({
     state: {
         currentTask: null,
     },
@@ -15,3 +15,4 @@ export default createStore<AppState>({
         },
     },
 });
+export default taskStore;
