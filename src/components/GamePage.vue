@@ -72,18 +72,18 @@ const addDigit = (digit: number) => {
 };
 
 const showAnswer = () => {
-    // if (!currentTask || !helper) return;
-    //
-    // const inputElements = document.querySelectorAll('.equation-char');
-    // if (inputElements.length === 0) return;
-    //
-    // for (let i = 0; i < inputElements.length; i++) {
-    //     const inputElement = inputElements[i] as HTMLInputElement;
-    //     if (helper[i]) {
-    //         inputElement.value = String(helper[i]);
-    //         updateInputValue(i, Number(helper[i]));
-    //     }
-    // }
+    if (!currentTask || !helper) return;
+
+    const inputElements = document.querySelectorAll('.equation-char');
+    if (inputElements.length === 0) return;
+
+    for (let i = 0; i < inputElements.length; i++) {
+        const inputElement = inputElements[i] as HTMLInputElement;
+        if (!helper[i]) return;
+        inputElement.value = String(helper[i]);
+        updateInputValue(i, Number(helper[i]));
+
+    }
 };
 const focusFieldLeft = () => {
     const currentIndex = activeIndex.value;
@@ -136,6 +136,8 @@ const generateNewTask = () => {
     const newTask = generator.generateTask(params);
     taskStore.dispatch('setCurrentTask', newTask);
     currentTask = taskStore.state.currentTask;
+    if (!currentTask) return;
+    helper.splice(0, helper.length, ...Object.values(currentTask.answer));
     console.log(currentTask)
 }
 
