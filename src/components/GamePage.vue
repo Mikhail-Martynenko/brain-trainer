@@ -3,6 +3,7 @@
         <div class="cancel">
             <button @click="cancelButton">Oтмена</button>
         </div>
+        <TimerSession />
         <div class="equation-container">
             <template v-for="(char, index) in currentTask?.equation" :key="index">
                 <input
@@ -38,9 +39,11 @@ import game from "@/domain/game";
 import router from "@/router";
 import ModalResult from "@/components/ModalResult.vue";
 import generator from "@/domain/generator";
+import TimerSession from "@/components/TimerSession.vue";
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
+
 
 let currentTask: Task | null = taskStore.state.currentTask;
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
@@ -52,6 +55,7 @@ const showModal = ref(false);
 const modalTitle = ref('');
 
 console.log(helper, 'helper')
+
 const inputValues = ref<{ [index: number]: number }>({});
 
 const updateInputValue = (index: number, value: number) => {
@@ -227,7 +231,7 @@ const cancelButton = () => {
     text-transform: uppercase;
     color: #6f6f6f;
     width: 100px;
-    height: 35px;
+    height: 40px;
     border: none;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
 }

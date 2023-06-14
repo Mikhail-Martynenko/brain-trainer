@@ -3,8 +3,9 @@
         <div>
             <h1>Привет!</h1>
             <div class="statistic_text">
-                <p>Добро пожаловать на ??? тренировочный день,</p>
-                <p>Ваш последний результат - решено {{ lastSession.score }} из {{lastSession.score + lastSession.missed}}</p>
+                <p>Добро пожаловать на {{ sessionStore.state.sessions.length }} тренировочный день,</p>
+                <p>Ваш последний результат - решено {{ lastSession.score }} из
+                   {{ lastSession.score + lastSession.missed }}</p>
                 <p>Общая точность {{ sessionStore.getters.getAccuracy }}%</p>
             </div>
         </div>
@@ -40,15 +41,16 @@ const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
 
 let selectedOperators: Operator[] = [];
-const selectedDifficulty = ref<number>(1);
+const selectedDifficulty = ref<number>(game.config.level);
 const roundTime = ref(7);
+
 
 const updateSelectedOperators = () => {
     selectedOperators = ALLOWED_OPERATORS.filter(operator => operator.checked).map(operator => operator);
 };
 
-const [lastSession] = sessionStore.state.sessions.slice(-1);
-console.log(lastSession)
+const lastSession = sessionStore.getters.getLastSession;
+console.log(game.config.level)
 
 // Вычисляемые свойства
 const currentTask = ref<Task>({
@@ -70,6 +72,7 @@ const startGame = () => {
     currentTask.value = game.generator.generateTask(params);
     taskStore.dispatch('setCurrentTask', currentTask.value);
 
+    game.session.timer = roundTime.value
     sessionStore.dispatch('startSession', game.session);
     router.push({name: 'gamePage'});
 };

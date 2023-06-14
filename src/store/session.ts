@@ -10,17 +10,18 @@ const sessionStore = createStore<Statistics>({
                 endTime: null,
                 score: 25,
                 missed: 5,
+                timer: 7,
             }
         ],
     },
     getters: {
         getLastSession: state => state.sessions[state.sessions.length - 1],
-        getAccuracy: (state) => {
+        getAccuracy: state => {
             const lastSession = state.sessions[state.sessions.length - 1];
             if (!lastSession) return 0;
             const total = lastSession.score + lastSession.missed;
             if (total === 0) return 0;
-            return (lastSession.score / total) * 100 >> 0 ;
+            return (lastSession.score / total) * 100 >> 0;
         },
     },
     actions: {

@@ -13,7 +13,8 @@ const session: Session = {
     startTime: new Date(),
     endTime: null,
     score: 0,
-    missed: 0
+    missed: 0,
+    timer: 0
 };
 
 const game: Game = {

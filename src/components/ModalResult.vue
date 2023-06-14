@@ -2,13 +2,13 @@
     <div class="modal" v-if="show">
         <div class="modal-overlay" @click="close"></div>
         <div class="modal-content">
-            <h2>{{ title }}</h2>
+            <h2>{{ props.title }}</h2>
             <button @click="close">Закрыть</button>
         </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {defineProps, defineEmits} from 'vue';
 
 const props = defineProps({
