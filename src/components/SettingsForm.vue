@@ -1,54 +1,39 @@
 <template>
-    <div class="setting-container">
-        <div>
-            <h1>Привет!</h1>
-            <div class="statistic_text">
-                <p>Добро пожаловать на {{ sessionStore.state.sessions.length + 1 }} тренировочный день,</p>
-                <p>Ваш последний результат - решено {{ lastSession.score }} из
-                   {{ lastSession.score + lastSession.missed }}</p>
-                <p>Общая точность {{ sessionStore.getters.getAccuracy }}%</p>
-            </div>
-        </div>
-        <form @submit.prevent="startGame">
-            <h2>Настройки</h2>
+    <form @submit.prevent="startGame">
+        <h2>Настройки</h2>
+        <div class="range_block">
             <input type="range" v-model.number="roundTime" min="1" max="15" @input="saveSettings" />
             <span>Длительность {{ roundTime }} минут</span>
-
-            <br>
             <input
                     type="range" v-model.number="selectedDifficulty" min="1" :max="maxDifficultyLevel"
                     @input="saveSettings"
             />
             <span>Сложность {{ selectedDifficulty }}</span>
-            <br>
-            <div class="operators">
-                <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
-                    <input
-                            type="checkbox" v-model="operator.checked" @change="updateSelectedOperators"
-                    />
-                    {{ operator.label }}
-                </label>
-            </div>
-            <button class="start_game_button" type="submit">Play!</button>
-        </form>
-    </div>
+        </div>
+        <div class="operators">
+            <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
+                <input type="checkbox" v-model="operator.checked" @change="updateSelectedOperators" />
+                {{ operator.label }}
+            </label>
+        </div>
+        <button class="start_game_button" type="submit">Play!</button>
+    </form>
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-
-import {ALLOWED_OPERATORS, Operator, Task, GenerateTaskParams} from '@/domain/domain';
+import {useStore} from 'vuex';
+import game, {maxDifficultyLevel} from '@/domain/game';
+import {ALLOWED_OPERATORS, GenerateTaskParams, Operator, Task} from "@/domain/domain";
 import router from "@/router";
-import {useStore} from "vuex";
-import game, {maxDifficultyLevel} from "@/domain/game";
+
+let selectedOperators: Operator[] = [];
+const roundTime = ref(7);
+const selectedDifficulty = ref(game.config.level);
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
 
-let selectedOperators: Operator[] = [];
-const selectedDifficulty = ref<number>(game.config.level);
-const roundTime = ref(7);
-const lastSession = sessionStore.getters.getLastSession;
 const currentTask = ref<Task>({
     startValue: 0,
     operators: [],
@@ -58,7 +43,9 @@ const currentTask = ref<Task>({
     complexity: 1,
 });
 
-onMounted(() => {
+onMounted(initializeSettings);
+
+function initializeSettings() {
     const savedSelectedDifficulty = localStorage.getItem('selectedDifficulty');
     const savedRoundTime = localStorage.getItem('roundTime');
     const savedSelectedOperators = localStorage.getItem('selectedOperators');
@@ -74,12 +61,14 @@ onMounted(() => {
         operator.checked = operatorLabels.includes(operator.label);
         return operator;
     });
-});
+}
+
 const saveSettings = () => {
     localStorage.setItem('selectedDifficulty', selectedDifficulty.value.toString());
     localStorage.setItem('roundTime', roundTime.value.toString());
     localStorage.setItem('selectedOperators', JSON.stringify(selectedOperators.map(operator => operator.label)));
 };
+
 const updateSelectedOperators = () => {
     selectedOperators = ALLOWED_OPERATORS.filter(operator => operator.checked);
     saveSettings()
@@ -101,32 +90,20 @@ const startGame = () => {
 
     router.push({name: 'gamePage'});
 };
-
-
 </script>
-
 <style>
-h1 {
-    text-align: left;
-}
-
-.statistic_text {
-    text-align: left;
-}
-
-.setting-container {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #6f6f6f;
-    padding: 40px;
-    width: 400px;
-    position: relative;
-}
-
 form {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+}
+
+.range_block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    margin-bottom: 20px;
 }
 
 .operators {
