@@ -4,7 +4,7 @@
             <input
                     v-if="char === '_'"
                     class="equation-char"
-                    :value="getInputValue[index]"
+                    :value="inputValues[index]"
                     @input="handleInput(index, $event.target.value)"
             />
             <span v-else>{{ char }}</span>
@@ -15,15 +15,13 @@
 <script setup lang="ts">
 import {defineProps} from 'vue';
 import {useStore} from "vuex";
-
 const inputStore = useStore('inputStore');
 
-const getInputValue = (index: number) => {
-    const inputValues = inputStore.getters.getInputValues;
-    return inputValues[index];
-};
+const inputValues = inputStore.getters.getInputValues;
+
 const handleInput = (index: number, value: string) => {
     inputStore.dispatch('updateInputValue', {index, value: Number(value)});
+    console.log(inputValues, 'ТЫК')
 };
 
 defineProps({

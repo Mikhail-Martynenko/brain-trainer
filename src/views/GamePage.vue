@@ -5,7 +5,7 @@
         </div>
         <TimerSession />
         <EquationContainer :equation="currentTask?.equation ? Array.from(currentTask.equation) : undefined" />
-        <ScreenKeyboard />
+        <ScreenKeyboard @answerChecked="handleAnswerChecked" />
         <ModalResult v-if="showModal" :title="modalTitle" :show="showModal" @close="closeModal" />
     </div>
 </template>
@@ -20,12 +20,14 @@ import generator from "@/domain/generator";
 import TimerSession from "@/components/TimerSession.vue";
 import EquationContainer from "@/components/EquationContainer.vue";
 import ScreenKeyboard from "@/components/ScreenKeyboard.vue";
+import sessionStore from "@/store/session";
 
 const taskStore = useStore('taskStore');
+const inputStore = useStore('inputStore');
 
 const showModal = ref(false);
 const modalTitle = ref('');
-
+let isCorrect = ref<boolean>(false);
 let currentTask: Task | null = taskStore.state.currentTask;
 
 const closeModal = () => {
@@ -33,8 +35,22 @@ const closeModal = () => {
     generateNewTask()
 };
 
+const handleAnswerChecked = (value: boolean) => {
+    isCorrect.value = value;
+    if (isCorrect.value) {
+        modalTitle.value = 'Верно!';
+        showModal.value = true;
+        sessionStore.dispatch('incrementScore')
+    } else {
+        modalTitle.value = 'Неверно!';
+        showModal.value = true;
+        sessionStore.dispatch('incrementMissed')
+    }
+};
+
 const generateNewTask = () => {
     if (!currentTask) return;
+   // inputStore.dispatch('deleteInputValue');
 
     const params: GenerateTaskParams = {
         complexity: currentTask?.complexity,
@@ -44,7 +60,6 @@ const generateNewTask = () => {
     taskStore.dispatch('setCurrentTask', newTask);
     currentTask = taskStore.state.currentTask;
     console.log(currentTask)
-    // inputValues.value = {};
 }
 
 const cancelButton = () => {

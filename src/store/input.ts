@@ -23,6 +23,9 @@ const inputStore = createStore<State>({
         updateInputValue({state}, payload) {
             const {index, value} = payload;
             state.inputValues[index] = value;
+        },
+        deleteInputValue({state}) {
+            state.inputValues = {};
         }
     },
     getters: {

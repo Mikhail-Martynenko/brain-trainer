@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {defineEmits, ref} from 'vue';
 import {Task} from "@/domain/domain";
 import taskStore from "@/store/task";
 import {useStore} from "vuex";
@@ -22,13 +22,15 @@ import game from "@/domain/game";
 
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
 let currentTask: Task | null = taskStore.state.currentTask;
-const sessionStore = useStore('sessionStore');
 const inputStore = useStore('inputStore');
 
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
+const emit = defineEmits(['answerChecked']);
 
-const inputValues = inputStore.getters.getInputValues
+
+const inputValues = ref(inputStore.getters.getInputValues)
+
 const addDigit = (digit: number) => {
     console.log(inputValues)
     const currentIndex = activeIndex.value;
@@ -45,7 +47,6 @@ const focusFieldLeft = () => {
     const inputElements = document.querySelectorAll('.equation-char');
     if (inputElements.length === 0) return;
     const lastIndex = inputElements.length - 1;
-
     const newIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
     activeIndex.value = newIndex;
     (inputElements[newIndex] as HTMLInputElement).focus();
@@ -76,23 +77,13 @@ const showAnswer = () => {
         inputStore.dispatch('updateInputValue', {index, value});
     });
 };
-
 const checkAnswer = () => {
     if (!currentTask) return;
-    console.log(inputValues, 'inputValues.value');
-    currentTask.answer = Object.values(inputValues) // .slice(0,currentTask.answer.length)
+    console.log(inputValues.value, 'inputValues.value');
+    currentTask.answer = Object.values(inputValues.value) // .slice(0,currentTask.answer.length)
     console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
-
-    if (isCorrect) {
-        // modalTitle.value = 'Верно!';
-        // showModal.value = true;
-        sessionStore.dispatch('incrementScore')
-    } else {
-        // modalTitle.value = 'Неверно!';
-        // showModal.value = true;
-        sessionStore.dispatch('incrementMissed')
-    }
+    emit('answerChecked', isCorrect);
 };
 </script>
 
