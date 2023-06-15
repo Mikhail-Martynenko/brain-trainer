@@ -5,6 +5,10 @@
             <input type="range" v-model.number="roundTime" min="1" max="15" @input="saveSettings" />
             <span>Длительность {{ roundTime }} минут</span>
             <input type="range" v-model.number="selectedDifficulty" min="1" :max="maxDifficultyLevel" @input="saveSettings" />
+            <input
+                    type="range" v-model.number="selectedDifficulty" min="1" :max="maxDifficultyLevel"
+                    @input="saveSettings"
+            />
             <span>Сложность {{ selectedDifficulty }}</span>
         </div>
         <div class="operators">
