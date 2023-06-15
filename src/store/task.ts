@@ -8,6 +8,7 @@ interface AppState {
 const taskStore = createStore<AppState>({
     state: {
         currentTask: null,
+
     },
     actions: {
         setCurrentTask({state}, task: Task) {
