@@ -6,41 +6,55 @@
         <div class="helpers-buttons">
             <button @click="focusFieldLeft">&lt;</button>
             <button @click="focusFieldRight">&gt;</button>
-            <button @click="showAnswer">?</button>
-            <button @click="checkAnswer">=</button>
+            <button @click="emit('showAnswer')">?</button>
+            <button @click="emit('checkAnswer')">=</button>
         </div>
     </div>
 
 </template>
 
 <script setup lang="ts">
-import {defineEmits, ref} from 'vue';
+import {defineEmits, defineProps, ref} from 'vue';
 import {Task} from "@/domain/domain";
 import taskStore from "@/store/task";
-import {useStore} from "vuex";
 import game from "@/domain/game";
 
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
-let currentTask: Task | null = taskStore.state.currentTask;
-const inputStore = useStore('inputStore');
+let currentTask = taskStore.getters.getCurrentTask;
 
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
-const emit = defineEmits(['answerChecked']);
+const emit = defineEmits(['answerChecked', 'updateInputValue', 'showAnswer','checkAnswer']);
 
+const props = defineProps({
+    inputValues: {
+        type: Object as () => { [index: number]: number },
+        required: true,
+    },
+    updateInputValue: {
+        type: Function as unknown as () => (value: number) => void,
+        required: true,
+    },
+    showAnswer: {
+        type: Function as unknown as () => () => void,
+        required: true,
+    },
+    checkAnswer: {
+        type: Function as unknown as () => () => void,
+        required: true,
+    },
+});
 
-const inputValues = ref(inputStore.getters.getInputValues)
-
-const addDigit = (digit: number) => {
-    console.log(inputValues)
-    const currentIndex = activeIndex.value;
-    const inputElements = document.querySelectorAll('.equation-char');
-    if (inputElements.length === 0 || currentIndex < 0 || currentIndex >= inputElements.length) return;
-
-    const activeInput = inputElements[currentIndex] as HTMLInputElement;
-    activeInput.value += digit;
-    inputStore.dispatch('updateInputValue', {index: currentIndex, value: Number(activeInput.value)});
-};
+// const addDigit = (digit: number) => {
+//     console.log(props.inputValues)
+//     const currentIndex = activeIndex.value;
+//     const inputElements = document.querySelectorAll('.equation-char');
+//     if (inputElements.length === 0 || currentIndex < 0 || currentIndex >= inputElements.length) return;
+//
+//     const activeInput = inputElements[currentIndex] as HTMLInputElement;
+//     activeInput.value += digit;
+//     emit('updateInputValue', {currentIndex, value: activeInput.value});
+// };
 
 const focusFieldLeft = () => {
     const currentIndex = activeIndex.value;
@@ -65,26 +79,27 @@ const focusFieldRight = () => {
     (inputElements[newIndex] as HTMLInputElement).focus();
 };
 
-const showAnswer = () => {
-    if (!currentTask) return;
-
-    const inputElements = document.querySelectorAll('.equation-char');
-    if (inputElements.length === 0) return;
-
-    currentTask.answer.forEach((value, index) => {
-        const inputElement = inputElements[index] as HTMLInputElement;
-        inputElement.value = String(value);
-        inputStore.dispatch('updateInputValue', {index, value});
-    });
-};
-const checkAnswer = () => {
-    if (!currentTask) return;
-    console.log(inputValues.value, 'inputValues.value');
-    currentTask.answer = Object.values(inputValues.value) // .slice(0,currentTask.answer.length)
-    console.log(Object.values(currentTask.answer), 'Решение на проверку')
-    const isCorrect = game.resolver.checkTask(currentTask);
-    emit('answerChecked', isCorrect);
-};
+// const showAnswer = () => {
+//     if (!currentTask) return;
+//
+//     const inputElements = document.querySelectorAll('.equation-char');
+//     if (inputElements.length === 0) return;
+//
+//     for (let i = 0; i < inputElements.length; i++) {
+//         const inputElement = inputElements[i] as HTMLInputElement;
+//         inputElement.value = String(currentTask.answer[i]);
+//         emit('updateInputValue', [i, Number(currentTask.answer[i])]);
+//
+//     }
+// };
+// const checkAnswer = () => {
+//     if (!currentTask) return;
+//     console.log(props.inputValues, 'inputValues.value');
+//     currentTask.answer = Object.values(props.inputValues) // .slice(0,currentTask.answer.length)
+//     console.log(Object.values(currentTask.answer), 'Решение на проверку')
+//     const isCorrect = game.resolver.checkTask(currentTask);
+//     emit('answerChecked', isCorrect);
+// };
 </script>
 
 <style scoped>

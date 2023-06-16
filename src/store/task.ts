@@ -10,6 +10,11 @@ const taskStore = createStore<AppState>({
         currentTask: null,
 
     },
+    getters: {
+        getCurrentTask(state) {
+            return state.currentTask;
+        },
+    },
     actions: {
         setCurrentTask({state}, task: Task) {
             state.currentTask = task;

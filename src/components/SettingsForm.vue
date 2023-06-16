@@ -4,7 +4,6 @@
         <div class="range_block">
             <input type="range" v-model.number="roundTime" min="1" max="15" @input="saveSettings" />
             <span>Длительность {{ roundTime }} минут</span>
-            <input type="range" v-model.number="selectedDifficulty" min="1" :max="maxDifficultyLevel" @input="saveSettings" />
             <input
                     type="range" v-model.number="selectedDifficulty" min="1" :max="maxDifficultyLevel"
                     @input="saveSettings"
@@ -76,12 +75,10 @@ const updateSelectedOperators = () => {
 };
 
 const startGame = () => {
-    const selectedOperatorSymbols = selectedOperators.map(operator => operator.label);
+    const selectedOperatorSymbols = selectedOperators.filter(operator => operator.checked).map(operator => operator.label);
+    const allowedOperators = ALLOWED_OPERATORS.filter(operator => selectedOperatorSymbols.includes(operator.label));
 
-    const params: GenerateTaskParams = {
-        complexity: selectedDifficulty.value,
-        allowedOperators: ALLOWED_OPERATORS.filter(operator => selectedOperatorSymbols.includes(operator.label)),
-    };
+    const params: GenerateTaskParams = {complexity: selectedDifficulty.value, allowedOperators: allowedOperators};
 
     currentTask.value = game.generator.generateTask(params);
     taskStore.dispatch('setCurrentTask', currentTask.value);

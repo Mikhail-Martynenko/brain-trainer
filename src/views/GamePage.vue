@@ -4,17 +4,7 @@
             <button @click="cancelButton">Oтмена</button>
         </div>
         <TimerSession />
-        <div class="equation-container">
-            <template v-for="(char, index) in currentTask?.equation" :key="index">
-                <input
-                    v-if="char === '_'"
-                    class="equation-char"
-                    :value="inputValues[index]"
-                    @input="updateInputValue(index, Number($event.target.value) )"
-                />
-                <span v-else>{{ char }}</span>
-            </template>
-        </div>
+        <EquationContainer :equation="currentTask?.equation ? Array.from(currentTask.equation) : undefined" />
         <div class="buttons">
             <div class="keyboard">
                 <button v-for="digit in digits" :key="digit" @click="addDigit(digit)">{{ digit }}</button>
@@ -26,6 +16,7 @@
                 <button @click="checkAnswer">=</button>
             </div>
         </div>
+        <!--        <ScreenKeyboard :inputValues="inputValues" :updateInputValue="updateInputValue"/>-->
         <ModalResult v-if="showModal" :title="modalTitle" :show="showModal" @close="closeModal" />
     </div>
 </template>
@@ -39,20 +30,24 @@ import router from "@/router";
 import ModalResult from "@/components/ModalResult.vue";
 import generator from "@/domain/generator";
 import TimerSession from "@/components/TimerSession.vue";
+import EquationContainer from "@/components/EquationContainer.vue";
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
+const inputStore = useStore('inputStore');
 
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
 const showModal = ref(false);
 const modalTitle = ref('');
-const inputValues = ref<{ [index: number]: number }>({});
 
-let currentTask: Task | null = taskStore.state.currentTask;
+const inputValues = inputStore.getters.getInputValues
+
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
+let currentTask = taskStore.getters.getCurrentTask;
+
 const updateInputValue = (index: number, value: number) => {
-    inputValues.value[index] = value;
+    inputStore.dispatch('updateInputValue', {index, value})
 };
 const addDigit = (digit: number) => {
     const currentIndex = activeIndex.value;
@@ -100,8 +95,8 @@ const focusFieldRight = () => {
 };
 const checkAnswer = () => {
     if (!currentTask) return;
-    console.log(inputValues.value, 'inputValues.value');
-    currentTask.answer = Object.values(inputValues.value) // .slice(0,currentTask.answer.length)
+    console.log(inputValues, 'inputValues.value');
+    currentTask.answer = Object.values(inputValues) // .slice(0,currentTask.answer.length)
     console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
 
@@ -130,8 +125,7 @@ const generateNewTask = () => {
     };
     const newTask = generator.generateTask(params);
     taskStore.dispatch('setCurrentTask', newTask);
-    currentTask = taskStore.state.currentTask;
-    console.log(currentTask)
+    currentTask = taskStore.getters.getCurrentTask;
 }
 
 const cancelButton = () => {
