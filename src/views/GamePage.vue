@@ -16,7 +16,7 @@
                 <button @click="checkAnswer">=</button>
             </div>
         </div>
-        <!--        <ScreenKeyboard :inputValues="inputValues" :updateInputValue="updateInputValue"/>-->
+        <!--                <ScreenKeyboard />-->
         <ModalResult v-if="showModal" :title="modalTitle" :show="showModal" @close="closeModal" />
     </div>
 </template>
@@ -31,6 +31,7 @@ import ModalResult from "@/components/ModalResult.vue";
 import generator from "@/domain/generator";
 import TimerSession from "@/components/TimerSession.vue";
 import EquationContainer from "@/components/EquationContainer.vue";
+import ScreenKeyboard from "@/components/ScreenKeyboard.vue";
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');

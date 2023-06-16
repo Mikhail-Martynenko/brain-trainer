@@ -2,13 +2,8 @@
     <form @submit.prevent="startGame">
         <h2>Настройки</h2>
         <div class="range_block">
-            <input type="range" v-model.number="roundTime" min="1" max="15" @input="saveSettings" />
-            <span>Длительность {{ roundTime }} минут</span>
-            <input
-                    type="range" v-model.number="selectedDifficulty" min="1" :max="maxDifficultyLevel"
-                    @input="saveSettings"
-            />
-            <span>Сложность {{ selectedDifficulty }}</span>
+            <SliderRange v-model="roundTime" label="Длительность" min="1" max="15" @input="saveSettings" />
+            <SliderRange v-model="selectedDifficulty" label="Сложность" min="1" :max="maxDifficultyLevel" @input="saveSettings" />
         </div>
         <div class="operators">
             <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
@@ -26,6 +21,7 @@ import {useStore} from 'vuex';
 import game, {maxDifficultyLevel} from '@/domain/game';
 import {ALLOWED_OPERATORS, GenerateTaskParams, Operator, Task} from "@/domain/domain";
 import router from "@/router";
+import SliderRange from "@/components/SliderRange.vue";
 
 let selectedOperators: Operator[] = [];
 const roundTime = ref(7);
@@ -66,12 +62,11 @@ function initializeSettings() {
 const saveSettings = () => {
     localStorage.setItem('selectedDifficulty', selectedDifficulty.value.toString());
     localStorage.setItem('roundTime', roundTime.value.toString());
-    localStorage.setItem('selectedOperators', JSON.stringify(selectedOperators.map(operator => operator.label)));
 };
 
 const updateSelectedOperators = () => {
     selectedOperators = ALLOWED_OPERATORS.filter(operator => operator.checked);
-    saveSettings()
+    localStorage.setItem('selectedOperators', JSON.stringify(selectedOperators.map(operator => operator.label)));
 };
 
 const startGame = () => {

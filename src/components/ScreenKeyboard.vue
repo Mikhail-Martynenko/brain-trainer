@@ -15,46 +15,44 @@
 
 <script setup lang="ts">
 import {defineEmits, defineProps, ref} from 'vue';
-import {Task} from "@/domain/domain";
-import taskStore from "@/store/task";
-import game from "@/domain/game";
+import {useStore} from "vuex";
+
+const taskStore = useStore('taskStore');
+const inputStore = useStore('inputStore');
 
 const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
 let currentTask = taskStore.getters.getCurrentTask;
 
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
-const emit = defineEmits(['answerChecked', 'updateInputValue', 'showAnswer','checkAnswer']);
+const emit = defineEmits(['answerChecked',  'showAnswer', 'checkAnswer']);
 
 const props = defineProps({
-    inputValues: {
-        type: Object as () => { [index: number]: number },
-        required: true,
-    },
-    updateInputValue: {
-        type: Function as unknown as () => (value: number) => void,
-        required: true,
-    },
-    showAnswer: {
-        type: Function as unknown as () => () => void,
-        required: true,
-    },
-    checkAnswer: {
-        type: Function as unknown as () => () => void,
-        required: true,
-    },
+    // inputValues: {
+    //     type: Object as () => { [index: number]: number },
+    //     required: true,
+    // },
+    // showAnswer: {
+    //     type: Function as unknown as () => () => void,
+    //     required: true,
+    // },
+    // checkAnswer: {
+    //     type: Function as unknown as () => () => void,
+    //     required: true,
+    // },
 });
 
-// const addDigit = (digit: number) => {
-//     console.log(props.inputValues)
-//     const currentIndex = activeIndex.value;
-//     const inputElements = document.querySelectorAll('.equation-char');
-//     if (inputElements.length === 0 || currentIndex < 0 || currentIndex >= inputElements.length) return;
-//
-//     const activeInput = inputElements[currentIndex] as HTMLInputElement;
-//     activeInput.value += digit;
-//     emit('updateInputValue', {currentIndex, value: activeInput.value});
-// };
+const addDigit = (digit: number) => {
+    console.log(inputStore.getters.getInputValues)
+    const currentIndex = activeIndex.value;
+    const inputElements = document.querySelectorAll('.equation-char');
+    if (inputElements.length === 0 || currentIndex < 0 || currentIndex >= inputElements.length) return;
+
+    const activeInput = inputElements[currentIndex] as HTMLInputElement;
+    activeInput.value += digit;
+    inputStore.dispatch('updateInputValue', {currentIndex, value: activeInput.value})
+    //emit('updateInputValue', {currentIndex, value: activeInput.value});
+};
 
 const focusFieldLeft = () => {
     const currentIndex = activeIndex.value;
