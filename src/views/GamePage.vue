@@ -16,7 +16,6 @@
                 <button @click="checkAnswer">=</button>
             </div>
         </div>
-        <!--                <ScreenKeyboard />-->
         <ModalResult v-if="showModal" :title="modalTitle" :show="showModal" @close="closeModal" />
     </div>
 </template>
@@ -27,11 +26,11 @@ import {useStore} from 'vuex';
 import {GenerateTaskParams, Task} from "@/domain/domain";
 import game from "@/domain/game";
 import router from "@/router";
-import ModalResult from "@/components/ModalResult.vue";
+import ModalResult from "@/components/game/ModalResult.vue";
 import generator from "@/domain/generator";
-import TimerSession from "@/components/TimerSession.vue";
-import EquationContainer from "@/components/EquationContainer.vue";
-import ScreenKeyboard from "@/components/ScreenKeyboard.vue";
+import TimerSession from "@/components/game/TimerSession.vue";
+import EquationContainer from "@/components/game/EquationContainer.vue";
+import ScreenKeyboard from "@/components/game/ScreenKeyboard.vue";
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');

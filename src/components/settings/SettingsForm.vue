@@ -21,7 +21,7 @@ import {useStore} from 'vuex';
 import game, {maxDifficultyLevel} from '@/domain/game';
 import {ALLOWED_OPERATORS, GenerateTaskParams, Operator, Task} from "@/domain/domain";
 import router from "@/router";
-import SliderRange from "@/components/SliderRange.vue";
+import SliderRange from "@/components/settings/SliderRange.vue";
 
 let selectedOperators: Operator[] = [];
 const roundTime = ref(7);

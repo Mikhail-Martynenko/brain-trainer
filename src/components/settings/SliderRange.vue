@@ -10,21 +10,17 @@
 <script setup lang="ts">
 import {defineProps} from 'vue';
 
-defineProps({
+ defineProps({
     modelValue: {
-        type: Number,
         required: true,
     },
     label: {
-        type: String,
         required: true,
     },
     min: {
-        type: String,
         required: true,
     },
     max: {
-        type: Number,
         required: true,
     },
 });

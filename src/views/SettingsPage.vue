@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 import {useStore} from "vuex";
-import WelcomeBlock from "@/components/WelcomeBlock.vue";
-import SettingsForm from "@/components/SettingsForm.vue";
+import WelcomeBlock from "@/components/settings/WelcomeBlock.vue";
+import SettingsForm from "@/components/settings/SettingsForm.vue";
 
 const sessionStore = useStore('sessionStore');
 const lastSession = sessionStore.getters.getLastSession;
