@@ -16,7 +16,6 @@
                 <button @click="checkAnswer">=</button>
             </div>
         </div>
-        <!--                <ScreenKeyboard />-->
         <ModalResult v-if="showModal" :title="modalTitle" :show="showModal" @close="closeModal" />
     </div>
 </template>
@@ -31,7 +30,6 @@ import ModalResult from "@/components/ModalResult.vue";
 import generator from "@/domain/generator";
 import TimerSession from "@/components/TimerSession.vue";
 import EquationContainer from "@/components/EquationContainer.vue";
-import ScreenKeyboard from "@/components/ScreenKeyboard.vue";
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
@@ -70,7 +68,6 @@ const showAnswer = () => {
         const inputElement = inputElements[i] as HTMLInputElement;
         inputElement.value = String(currentTask.answer[i]);
         updateInputValue(i, Number(currentTask.answer[i]));
-
     }
 };
 const focusFieldLeft = () => {
@@ -97,7 +94,7 @@ const focusFieldRight = () => {
 const checkAnswer = () => {
     if (!currentTask) return;
     console.log(inputValues, 'inputValues.value');
-    currentTask.answer = Object.values(inputValues) // .slice(0,currentTask.answer.length)
+    currentTask.answer = Object.values(inputValues)
     console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
 

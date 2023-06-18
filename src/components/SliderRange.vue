@@ -12,7 +12,6 @@ import {defineProps} from 'vue';
 
 defineProps({
     modelValue: {
-        type: Number,
         required: true,
     },
     label: {
@@ -20,15 +19,12 @@ defineProps({
         required: true,
     },
     min: {
-        type: String,
         required: true,
     },
     max: {
-        type: Number,
         required: true,
     },
 });
-
 </script>
 
 <style scoped>

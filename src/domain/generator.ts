@@ -8,24 +8,19 @@ const generator: Generator = {
         const operators: Operator[] = [];
         const hiddenNumbers: number[] = [];
 
-        // Генерация случайных операторов из списка выбранных операторов
         for (let i = 0; i < complexity; i++) {
             const randomOperator = allowedOperators[Math.floor(Math.random() * allowedOperators.length)];
             operators.push(randomOperator);
-            const hiddenNumber = getRandomInteger(1, 10); // Случайное число, которое будет скрыто
+            const hiddenNumber = getRandomInteger(1, 10);
             hiddenNumbers.push(hiddenNumber);
         }
-        // TODO Логика не учитывает приоритет операторов - доработать
-        // TODO Возможно надо перенести логику в resolver, а здесь вызвать функцию checkTask из него
 
-          operators.sort((a, b) => b.priority - a.priority);// .......
-        // Вычисление результата уравнения
+          operators.sort((a, b) => b.priority - a.priority);
         let calculatedResult = startValue;
         for (let i = 0; i < complexity; i++) {
             calculatedResult = operators[i].resolve(calculatedResult, hiddenNumbers[i]);
         }
 
-        // Формирование уравнения со скрытыми числами
         let equation = `${startValue}`;
         for (let i = 0; i < complexity; i++) {
             equation += ` ${operators[i].displaySign} _`;
@@ -33,7 +28,6 @@ const generator: Generator = {
         equation += ` = ${calculatedResult}`;
         console.log(equation)
 
-        // Просто посмотреть, как выглядит полное уравнение TODO DELETE THIS
         let checkEquation = `${startValue}`;
         console.log(hiddenNumbers)
         for (let i = 0; i < complexity; i++) {
@@ -45,7 +39,7 @@ const generator: Generator = {
         return {
             startValue,
             operators,
-            answer: hiddenNumbers, // Значения, которые пользователь должен ввести
+            answer: hiddenNumbers,
             result: calculatedResult,
             equation,
             complexity,

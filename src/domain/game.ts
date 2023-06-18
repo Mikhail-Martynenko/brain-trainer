@@ -2,7 +2,7 @@ import {Statistics, Session, Game} from '@/domain/domain';
 import generator from '@/domain/generator';
 import resolver from '@/domain/resolver';
 
-export const maxDifficultyLevel = 10; // Максимальный уровень сложности
+export const MAX_DIFFICULTY_LEVEL = 10 as const;
 
 const statistics: Statistics = {
     sessions: [],
