@@ -18,14 +18,13 @@ import {defineEmits, defineProps, ref} from 'vue';
 import {useStore} from "vuex";
 
 const taskStore = useStore('taskStore');
-const inputStore = useStore('inputStore');
 
 const activeIndex = ref<number>(0);
 let currentTask = taskStore.getters.getCurrentTask;
 
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
-const emit = defineEmits(['answerChecked',  'showAnswer', 'checkAnswer']);
+const emit = defineEmits(['answerChecked', 'showAnswer', 'checkAnswer']);
 
 const props = defineProps({
     // inputValues: {
@@ -43,14 +42,12 @@ const props = defineProps({
 });
 
 const addDigit = (digit: number) => {
-    console.log(inputStore.getters.getInputValues)
     const currentIndex = activeIndex.value;
     const inputElements = document.querySelectorAll('.equation-char');
     if (inputElements.length === 0 || currentIndex < 0 || currentIndex >= inputElements.length) return;
 
     const activeInput = inputElements[currentIndex] as HTMLInputElement;
     activeInput.value += digit;
-    inputStore.dispatch('updateInputValue', {currentIndex, value: activeInput.value})
     //emit('updateInputValue', {currentIndex, value: activeInput.value});
 };
 

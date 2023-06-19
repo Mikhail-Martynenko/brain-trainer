@@ -4,7 +4,9 @@
             <button @click="cancelButton">Oтмена</button>
         </div>
         <TimerSession />
-        <EquationContainer :currentTask="currentTask" />
+        <EquationContainer
+                :currentTask="currentTask" :updateInputValue="updateInputValue" :inputValues="inputValuesNew"
+        />
         <div class="buttons">
             <div class="keyboard">
                 <button v-for="digit in digits" :key="digit" @click="addDigit(digit)">{{ digit }}</button>
@@ -32,20 +34,19 @@ import EquationContainer from "@/components/game/EquationContainer.vue";
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
-const inputStore = useStore('inputStore');
 
 const activeIndex = ref<number>(0);
 const showModal = ref(false);
 const modalTitle = ref('');
 
-const inputValues = inputStore.getters.getInputValues
-
 const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
 let currentTask = taskStore.getters.getCurrentTask;
 
+const inputValuesNew = ref<{ [index: number]: number }>({});
+
 const updateInputValue = (index: number, value: number) => {
-    inputStore.dispatch('updateInputValue', {index, value})
+    inputValuesNew.value[index] = value;
 };
 const addDigit = (digit: number) => {
     const currentIndex = activeIndex.value;
@@ -55,6 +56,7 @@ const addDigit = (digit: number) => {
     const activeInput = inputElements[currentIndex] as HTMLInputElement;
     activeInput.value += digit;
     updateInputValue(currentIndex, Number(activeInput.value));
+
 };
 
 const showAnswer = () => {
@@ -92,8 +94,8 @@ const focusFieldRight = () => {
 };
 const checkAnswer = () => {
     if (!currentTask) return;
-    console.log(inputValues, 'inputValues.value');
-    currentTask.answer = Object.values(inputValues)
+    console.log(inputValuesNew.value, 'inputValues.value');
+    currentTask.answer = Object.values(inputValuesNew.value)
     console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
 
