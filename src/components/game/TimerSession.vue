@@ -10,28 +10,23 @@ import game from "@/domain/game";
 import router from "@/router";
 
 const timeLeft = ref(game.session.timer * 60);
+
 const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-const countdown = () => {
-    timeLeft.value--;
-};
+const countdown = () => timeLeft.value--;
 
-// Start the timer when the component is mounted
 onMounted(() => {
     const timer = setInterval(countdown, 1000);
 
-    // Stop the timer when the time runs out
     watch(timeLeft, (newValue) => {
         if (newValue <= 0) {
             clearInterval(timer);
-
             router.push({name: 'settingsPage'});
         }
-
     });
 });
 </script>

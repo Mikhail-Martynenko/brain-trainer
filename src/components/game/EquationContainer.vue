@@ -25,7 +25,6 @@ const updateInputValue = (index: number, value: number) => {
     inputStore.dispatch('updateInputValue', {index, value})
 }
 
-
 defineProps({
     equation: {
         type: Array as () => string[] | undefined,

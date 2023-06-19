@@ -3,7 +3,7 @@
         <h2>Настройки</h2>
         <div class="range_block">
             <SliderRange v-model="roundTime" label="Длительность" min="1" max="15" @input="saveSettings" />
-            <SliderRange v-model="selectedDifficulty" label="Сложность" min="1" :max="maxDifficultyLevel" @input="saveSettings" />
+            <SliderRange v-model="selectedDifficulty" label="Сложность" min="1" :max="MAX_DIFFICULTY_LEVEL" @input="saveSettings" />
         </div>
         <div class="operators">
             <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import {useStore} from 'vuex';
-import game, {maxDifficultyLevel} from '@/domain/game';
+import game, {MAX_DIFFICULTY_LEVEL} from '@/domain/game';
 import {ALLOWED_OPERATORS, GenerateTaskParams, Operator, Task} from "@/domain/domain";
 import router from "@/router";
 import SliderRange from "@/components/settings/SliderRange.vue";

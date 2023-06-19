@@ -18,9 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-const close = () => {
-    emit('close');
-};
+const close = () => emit('close');
 </script>
 
 <style scoped>

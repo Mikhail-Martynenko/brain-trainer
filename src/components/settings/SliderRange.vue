@@ -24,7 +24,6 @@ import {defineProps} from 'vue';
         required: true,
     },
 });
-
 </script>
 
 <style scoped>

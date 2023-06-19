@@ -63,7 +63,7 @@ export interface Task {
     operators: Operator[];
     answer: number[];
     result: number;
-    equation: string; // Уравнение
+    equation: string;
     complexity:number
 }
 
