@@ -4,7 +4,7 @@
             <button @click="cancelButton">Oтмена</button>
         </div>
         <TimerSession />
-        <EquationContainer :equation="currentTask?.equation ? Array.from(currentTask.equation) : undefined" />
+        <EquationContainer :currentTask="currentTask" />
         <div class="buttons">
             <div class="keyboard">
                 <button v-for="digit in digits" :key="digit" @click="addDigit(digit)">{{ digit }}</button>
@@ -16,7 +16,6 @@
                 <button @click="checkAnswer">=</button>
             </div>
         </div>
-        <!--                <ScreenKeyboard />-->
         <ModalResult v-if="showModal" :title="modalTitle" :show="showModal" @close="closeModal" />
     </div>
 </template>
@@ -24,20 +23,18 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import {useStore} from 'vuex';
-import {GenerateTaskParams, Task} from "@/domain/domain";
+import {GenerateTaskParams} from "@/domain/domain";
 import game from "@/domain/game";
 import router from "@/router";
-import ModalResult from "@/components/ModalResult.vue";
-import generator from "@/domain/generator";
-import TimerSession from "@/components/TimerSession.vue";
-import EquationContainer from "@/components/EquationContainer.vue";
-import ScreenKeyboard from "@/components/ScreenKeyboard.vue";
+import ModalResult from "@/components/game/ModalResult.vue";
+import TimerSession from "@/components/game/TimerSession.vue";
+import EquationContainer from "@/components/game/EquationContainer.vue";
 
 const taskStore = useStore('taskStore');
 const sessionStore = useStore('sessionStore');
 const inputStore = useStore('inputStore');
 
-const activeIndex = ref<number>(0); // Реактивная переменная для отслеживания активного индекса
+const activeIndex = ref<number>(0);
 const showModal = ref(false);
 const modalTitle = ref('');
 
@@ -70,7 +67,6 @@ const showAnswer = () => {
         const inputElement = inputElements[i] as HTMLInputElement;
         inputElement.value = String(currentTask.answer[i]);
         updateInputValue(i, Number(currentTask.answer[i]));
-
     }
 };
 const focusFieldLeft = () => {
@@ -97,7 +93,7 @@ const focusFieldRight = () => {
 const checkAnswer = () => {
     if (!currentTask) return;
     console.log(inputValues, 'inputValues.value');
-    currentTask.answer = Object.values(inputValues) // .slice(0,currentTask.answer.length)
+    currentTask.answer = Object.values(inputValues)
     console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
 
@@ -124,7 +120,7 @@ const generateNewTask = () => {
         complexity: currentTask?.complexity,
         allowedOperators: currentTask?.operators,
     };
-    const newTask = generator.generateTask(params);
+    const newTask = game.generator.generateTask(params);
     taskStore.dispatch('setCurrentTask', newTask);
     currentTask = taskStore.getters.getCurrentTask;
 }
@@ -146,10 +142,6 @@ const cancelButton = () => {
     border: 1px solid salmon;
     background-color: #fdfdfd;
     position: relative;
-}
-
-.equation-container {
-    font-size: 32px;
 }
 
 .buttons {

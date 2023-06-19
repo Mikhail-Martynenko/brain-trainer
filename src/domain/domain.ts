@@ -53,6 +53,7 @@ export interface Operator {
     displaySign: string;
     checked: boolean,
     priority: number,
+
     resolve(left: number, right: number): number;
 
     validate?(left: number, right: number): boolean;
@@ -63,7 +64,6 @@ export interface Task {
     operators: Operator[];
     answer: number[];
     result: number;
-    equation: string;
     complexity:number
 }
 
@@ -74,6 +74,9 @@ export interface GenerateTaskParams {
 
 export interface Generator {
     generateTask(params: GenerateTaskParams): Task;
+
+    MIN_ALLOWED_NUMBER: number;
+    MAX_ALLOWED_NUMBER: number;
 }
 
 export interface Resolver {

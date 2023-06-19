@@ -3,7 +3,10 @@
         <h2>Настройки</h2>
         <div class="range_block">
             <SliderRange v-model="roundTime" label="Длительность" min="1" max="15" @input="saveSettings" />
-            <SliderRange v-model="selectedDifficulty" label="Сложность" min="1" :max="MAX_DIFFICULTY_LEVEL" @input="saveSettings" />
+            <SliderRange
+                    v-model="selectedDifficulty" label="Сложность" min="1" :max="MAX_DIFFICULTY_LEVEL"
+                    @input="saveSettings"
+            />
         </div>
         <div class="operators">
             <label v-for="operator in ALLOWED_OPERATORS" :key="operator.symbol">
@@ -35,7 +38,6 @@ const currentTask = ref<Task>({
     operators: [],
     answer: [],
     result: 0,
-    equation: '',
     complexity: 1,
 });
 
@@ -76,6 +78,7 @@ const startGame = () => {
     const params: GenerateTaskParams = {complexity: selectedDifficulty.value, allowedOperators: allowedOperators};
 
     currentTask.value = game.generator.generateTask(params);
+    console.log(currentTask.value, "currentTask.value")
     taskStore.dispatch('setCurrentTask', currentTask.value);
 
     game.session.timer = roundTime.value
