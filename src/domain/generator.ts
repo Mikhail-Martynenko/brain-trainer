@@ -15,9 +15,6 @@ const generator: Generator = {
             const hiddenNumber = getRandomInteger(1, 10); // Случайное число, которое будет скрыто
             hiddenNumbers.push(hiddenNumber);
         }
-        // TODO Логика не учитывает приоритет операторов - доработать
-        // TODO Возможно надо перенести логику в resolver, а здесь вызвать функцию checkTask из него
-
           operators.sort((a, b) => b.priority - a.priority);// .......
         // Вычисление результата уравнения
         let calculatedResult = startValue;
