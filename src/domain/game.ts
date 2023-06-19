@@ -1,6 +1,6 @@
-import {Statistics, Session, Game} from '@/domain/domain';
-import resolver from '@/domain/resolver';
+import {Statistics, Session, Game, Resolver} from '@/domain/domain';
 import TaskGenerator from "@/domain/taskGenerator";
+import ResolverImpl from "@/domain/resolver";
 
 export const MAX_DIFFICULTY_LEVEL = 10 as const;
 
@@ -17,7 +17,7 @@ const session: Session = {
     timer: 0
 };
 const generator: TaskGenerator = new TaskGenerator();
-
+const resolver: Resolver = new ResolverImpl();
 const game: Game = {
     statistics,
     config: {level: 1},
