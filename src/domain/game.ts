@@ -18,6 +18,7 @@ const session: Session = {
 };
 const generator: TaskGenerator = new TaskGenerator();
 const resolver: Resolver = new ResolverImpl();
+
 const game: Game = {
     statistics,
     config: {level: 1},

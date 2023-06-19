@@ -1,17 +1,18 @@
 import {createStore} from 'vuex';
 import {Session, Statistics} from "@/domain/domain";
 
+const NEW_USER_WELCOMING_BONUS_SESSION = {
+    id: Date.now().toString(),
+    startTime: new Date(),
+    endTime: new Date(),
+    score: 25,
+    missed: 5,
+    timer: 7,
+}
 const sessionStore = createStore<Statistics>({
     state: {
         sessions: [
-            {
-                id: Date.now().toString(),
-                startTime: new Date(),
-                endTime: null,
-                score: 25,
-                missed: 5,
-                timer: 7,
-            }
+            NEW_USER_WELCOMING_BONUS_SESSION,
         ],
     },
     getters: {
