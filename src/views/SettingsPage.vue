@@ -1,22 +1,19 @@
 <template>
     <div class="setting-container">
         <WelcomeBlock
-                :sessionCount="sessionStore.state.sessions.length + 1"
-                :lastSessionScore="lastSession.score"
-                :lastSessionTotal="lastSession.score + lastSession.missed"
-                :accuracy="sessionStore.getters.getAccuracy"
+                :sessionCount="statisticsGame.statistics.sessions.length + 1"
+                :lastSessionScore="statisticsGame.getLastSession().score"
+                :lastSessionTotal="statisticsGame.getLastSession().score + statisticsGame.getLastSession().missed"
+                :accuracy="statisticsGame.getAccuracy()"
         />
         <SettingsForm />
     </div>
 </template>
 
 <script setup lang="ts">
-import {useStore} from "vuex";
 import WelcomeBlock from "@/components/settings/WelcomeBlock.vue";
 import SettingsForm from "@/components/settings/SettingsForm.vue";
-
-const sessionStore = useStore('sessionStore');
-const lastSession = sessionStore.getters.getLastSession;
+import statisticsGame from "@/domain/statisticsGame";
 </script>
 
 <style>

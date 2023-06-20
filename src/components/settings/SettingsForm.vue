@@ -25,13 +25,14 @@ import game, {MAX_DIFFICULTY_LEVEL} from '@/domain/game';
 import {ALLOWED_OPERATORS, GenerateTaskParams, Operator, Task} from "@/domain/domain";
 import router from "@/router";
 import SliderRange from "@/components/settings/SliderRange.vue";
+import statisticsGame from "@/domain/statisticsGame";
+import CurrentSession from "@/domain/session";
 
 let selectedOperators: Operator[] = [];
 const roundTime = ref(7);
 const selectedDifficulty = ref(game.config.level);
 
 const taskStore = useStore('taskStore');
-const sessionStore = useStore('sessionStore');
 
 const currentTask = ref<Task>({
     startValue: 0,
@@ -78,11 +79,10 @@ const startGame = () => {
     const params: GenerateTaskParams = {complexity: selectedDifficulty.value, allowedOperators: allowedOperators};
 
     currentTask.value = game.generator.generateTask(params);
-    console.log(currentTask.value, "currentTask.value")
     taskStore.dispatch('setCurrentTask', currentTask.value);
 
-    game.session.timer = roundTime.value
-    sessionStore.dispatch('startSession', game.session);
+    game.session = new CurrentSession(Date.now().toString(), new Date(), new Date(), 0, 0, roundTime.value)
+    statisticsGame.startSession(game.session)
 
     router.push({name: 'gamePage'});
 };

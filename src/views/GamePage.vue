@@ -31,9 +31,9 @@ import router from "@/router";
 import ModalResult from "@/components/game/ModalResult.vue";
 import TimerSession from "@/components/game/TimerSession.vue";
 import EquationContainer from "@/components/game/EquationContainer.vue";
+import statisticsGame from "@/domain/statisticsGame";
 
 const taskStore = useStore('taskStore');
-const sessionStore = useStore('sessionStore');
 
 const activeIndex = ref<number>(0);
 const showModal = ref(false);
@@ -94,19 +94,17 @@ const focusFieldRight = () => {
 };
 const checkAnswer = () => {
     if (!currentTask) return;
-    console.log(inputValuesNew.value, 'inputValues.value');
     currentTask.answer = Object.values(inputValuesNew.value)
-    console.log(Object.values(currentTask.answer), 'Решение на проверку')
     const isCorrect = game.resolver.checkTask(currentTask);
 
     if (isCorrect) {
         modalTitle.value = 'Верно!';
         showModal.value = true;
-        sessionStore.dispatch('incrementScore')
+        statisticsGame.incrementScore()
     } else {
         modalTitle.value = 'Неверно!';
         showModal.value = true;
-        sessionStore.dispatch('incrementMissed')
+        statisticsGame.incrementMissed()
     }
 };
 
