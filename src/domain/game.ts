@@ -1,30 +1,29 @@
-import {Statistics, Session, Game, Resolver} from '@/domain/domain';
+import {Statistics, Game} from '@/domain/domain';
 import TaskGenerator from "@/domain/taskGenerator";
 import ResolverImpl from "@/domain/resolver";
+import CurrentSession from "@/domain/session";
 
 export const MAX_DIFFICULTY_LEVEL = 10 as const;
 
-const statistics: Statistics = {
-    sessions: [],
-};
+class GameController implements Game {
+    statistics: Statistics;
+    session: CurrentSession;
+    config;
+    generator: TaskGenerator;
+    resolver: ResolverImpl;
 
-const session: Session = {
-    id: Date.now().toString(),
-    startTime: new Date(),
-    endTime: null,
-    score: 0,
-    missed: 0,
-    timer: 0
-};
-const generator: TaskGenerator = new TaskGenerator();
-const resolver: Resolver = new ResolverImpl();
+    constructor() {
+        this.statistics = {
+            sessions: [],
+        };
 
-const game: Game = {
-    statistics,
-    config: {level: 1},
-    session,
-    generator,
-    resolver,
-};
+        this.session = new CurrentSession("1", new Date(), null, 0, 0, 7);
+        this.generator = new TaskGenerator();
+        this.resolver = new ResolverImpl();
+        this.config = {level: 1}
+    }
+}
+
+const game = new GameController()
 
 export default game;

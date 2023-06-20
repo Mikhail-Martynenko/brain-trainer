@@ -97,7 +97,7 @@ export interface Session {
     endTime: Date | null;
     score: number;
     missed: number;
-    timer: number;
+    timer: number
 }
 
 export interface Game {
