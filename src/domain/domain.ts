@@ -3,14 +3,11 @@
 // eval('13 * 54 * 72 === 84240')
 
 // 2. Если eval использовать нельзя, то нужно использовать объекты ответов и интерфейсы
-
 export enum OperatorSymbol {
     PLUS,
     MINUS,
     MULTIPLY,
     DIVIDE,
-
-
     // POW
 }
 
@@ -20,6 +17,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Суммирование",
         displaySign: '+',
         checked: false,
+        priority: 12,
         resolve: (a, b) => a + b,
     },
     {
@@ -27,6 +25,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Разность",
         displaySign: '-',
         checked: false,
+        priority: 12,
         resolve: (a, b) => a - b,
     },
     {
@@ -34,6 +33,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Умножение",
         displaySign: '*',
         checked: false,
+        priority: 13,
         resolve: (a, b) => a * b,
     },
     {
@@ -41,6 +41,7 @@ export const ALLOWED_OPERATORS: Operator[] = [
         label: "Деление",
         displaySign: '/',
         checked: false,
+        priority: 13,
         resolve: (a, b) => a / b,
         validate: (a, b) => b !== 0,
     },
@@ -51,6 +52,8 @@ export interface Operator {
     label: string;
     displaySign: string;
     checked: boolean,
+    priority: number,
+
     resolve(left: number, right: number): number;
 
     validate?(left: number, right: number): boolean;
@@ -61,7 +64,7 @@ export interface Task {
     operators: Operator[];
     answer: number[];
     result: number;
-    equation: string; // Уравнение
+    complexity:number
 }
 
 export interface GenerateTaskParams {
@@ -71,6 +74,9 @@ export interface GenerateTaskParams {
 
 export interface Generator {
     generateTask(params: GenerateTaskParams): Task;
+
+    MIN_ALLOWED_NUMBER: number;
+    MAX_ALLOWED_NUMBER: number;
 }
 
 export interface Resolver {
@@ -90,6 +96,8 @@ export interface Session {
     startTime: Date;
     endTime: Date | null;
     score: number;
+    missed: number;
+    timer: number
 }
 
 export interface Game {
